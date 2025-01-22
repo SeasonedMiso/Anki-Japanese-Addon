@@ -8,7 +8,7 @@ from anki.hooks import addHook
 from aqt.qt import *
 from aqt.utils import openLink, tooltip
 from .miutils import miInfo, miAsk
-from anki.utils import isMac, isWin, isLin
+from anki.utils import is_mac, is_win, is_lin
 from anki.lang import _
 from aqt.webview import AnkiWebView
 import re
@@ -17,7 +17,14 @@ import os
 from os.path import dirname, join
 from aqt import mw
 from .jsgui import Ui_Dialog
-from PyQt5 import QtWidgets
+try:
+    from aqt.qt import QtWidgets  # Preferred import for compatibility
+except ImportError:
+    from PyQt6 import QtSvgWidgets
+    # try:
+    #     from PyQt6 import QtSvgWidgets
+    # except ImportError:
+    #     # from PyQt5 import QtSvgWidgets
 from operator import itemgetter
 addon_path = dirname(__file__)
 import platform
@@ -65,7 +72,7 @@ class JSGui(QScrollArea):
         self.buttonStatus = 0
         self.selectedRow = False
         self.initializing = False
-        self.addMigakuNoteTypeOnApply = False
+        self.addMisoNoteTypeOnApply = False
         self.sortedProfiles = False
         self.sortedNoteTypes = False
         self.importW = False
@@ -73,9 +80,9 @@ class JSGui(QScrollArea):
         self.setInitialValues()
 
     def setInitialValues(self):
-        self.setWindowIcon(QIcon(join(addon_path, 'icons', 'migaku.png')))
-        self.setWindowTitle("Migaku Japanese Settings (Ver. " + verNumber + ")")
-        self.cont.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setWindowIcon(QIcon(join(addon_path, 'icons', 'miso.png')))
+        self.setWindowTitle("Miso Japanese Settings (Ver. " + verNumber + ")")
+        self.cont.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         self.cont.setFixedSize(1167, 725)
         self.setWidget(self.cont)
         self.setWidgetResizable(True)
@@ -83,7 +90,7 @@ class JSGui(QScrollArea):
         self.initActiveFieldsCB()
         self.setToolTips()
         self.loadCurrentAFs()
-        self.loadCSSJSAddMigaku()
+        self.loadCSSJSAddMiso()
         self.handleAutoCSSJS()
         self.loadProfileCB()
         self.loadProfilesList()
@@ -103,12 +110,12 @@ class JSGui(QScrollArea):
     def setupRulesTable(self):
         rt = self.ui.rulesTable
         self.ueMng.setupModel(self)
-        rt.setModel(self.ueMng.model)
-        self.ueMng.model.ascendingOrder()
+        rt.setModel(self.ueMng.note_type)
+        self.ueMng.note_type.ascendingOrder()
         self.updateRuleCounter()
         tableHeader2 = rt.horizontalHeader()
-        tableHeader2.setSectionResizeMode(0, QHeaderView.Stretch)
-        tableHeader2.setSectionResizeMode(1, QHeaderView.Stretch)
+        tableHeader2.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        tableHeader2.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
     def customContextMenu(self, event):
         rows = self.ui.rulesTable.selectionModel().selectedRows()
@@ -119,14 +126,14 @@ class JSGui(QScrollArea):
             pos = event.pos()
             x = pos.x() + 20
             y = pos.y() + 115
-            action = menu.exec_(self.mapToGlobal(QPoint(x, y)))
+            action = menu.exec(self.mapToGlobal(QPoint(x, y)))
             if action == delete:
                 self.removeMultipleRules(rows, str(length))
 
     def removeMultipleRules(self, rows, length):
         if miAsk('Are you sure you would like to remove the ' + length + ' rules that are selected from the overwrite rule list?'):
             self.ui.rulesTable.setSortingEnabled(False)
-            self.ueMng.model.removeRows(rows[0].row(), len(rows))
+            self.ueMng.note_type.removeRows(rows[0].row(), len(rows))
             self.updateRuleCounter()
             self.ui.rulesTable.setSortingEnabled(True)
             
@@ -136,7 +143,7 @@ class JSGui(QScrollArea):
         
 
     def updateRuleCounter(self):
-        self.ui.ruleCounter.setText('Rule Count: ' + str(self.ueMng.model.rowCount()))
+        self.ui.ruleCounter.setText('Rule Count: ' + str(self.ueMng.note_type.rowCount()))
     
 
 
@@ -150,12 +157,12 @@ class JSGui(QScrollArea):
             self.ui.searchRulesLE.setText('')
             self.updateRuleCounter()
             if addId is not False:
-                addIdx = self.ueMng.model.index(addId, 0)
+                addIdx = self.ueMng.note_type.index(addId, 0)
                 self.ui.rulesTable.scrollTo(addIdx)
                 self.ui.rulesTable.selectRow(addId)
             else:
                 self.ui.rulesTable.scrollToBottom()
-                lastRow = self.ueMng.model.rowCount()  - 1
+                lastRow = self.ueMng.note_type.rowCount()  - 1
                 self.ui.rulesTable.selectRow(lastRow)
 
     def closeEvent(self, event):
@@ -163,7 +170,7 @@ class JSGui(QScrollArea):
             self.arMenu.hide()
         if self.importW:
             self.importW.hide()
-        self.mw.MigakuJSSettings = None
+        self.mw.MisoJSSettings = None
         event.accept() 
 
     def hideEvent(self, event):
@@ -174,11 +181,11 @@ class JSGui(QScrollArea):
         event.accept() 
 
     def openApplyRuleInquiry(self, rule):
-        self.arMenu = QWidget(self, Qt.Window)
+        self.arMenu = QWidget(self, Qt.WindowType.Window)
         self.arMenu.setWindowTitle('Apply Edited Rule?')
         self.arMenu.setWindowFlags(Qt.Dialog |Qt.MSWindowsFixedSizeDialogHint)
         self.arMenu.setFixedSize(270,80)
-        self.arMenu.setWindowModality(Qt.ApplicationModal)
+        self.arMenu.setWindowModality(Qt.WindowModality.ApplicationModal)
         label = QLabel('Apply to:', self.arMenu)
         hLayout = QHBoxLayout()
         ncCB = QCheckBox('new cards')
@@ -203,7 +210,7 @@ class JSGui(QScrollArea):
         nc = self.ui.ncAllCB.isChecked() 
         lc = self.ui.lcAllCB.isChecked()
         if nc or lc:
-            self.ueMng.applyRules(self.ueMng.model.sourceModel().ueList, nc, lc, self)
+            self.ueMng.applyRules(self.ueMng.note_type.sourceModel().ueList, nc, lc, self)
 
     def applyEditedRule(self, rule, nc, lc):
         if nc or lc:
@@ -239,15 +246,15 @@ class JSGui(QScrollArea):
             self.reboot()
 
 
-    def loadCSSJSAddMigaku(self):
+    def loadCSSJSAddMiso(self):
         if self.config['AutoCssJsGeneration'].lower() == 'on':
             self.ui.autoCSSJS.setChecked(True)
-        if self.config['AddMigakuJapaneseTemplate'].lower() == 'on':
-            self.ui.addMigakuNoteType.setChecked(True)
+        if self.config['AddMisoJapaneseTemplate'].lower() == 'on':
+            self.ui.addMisoNoteType.setChecked(True)
 
     def initHandlers(self):
         self.ui.autoCSSJS.toggled.connect(self.handleAutoCSSJS)
-        self.ui.addMigakuNoteType.toggled.connect(self.handleAddMigaku)
+        self.ui.addMisoNoteType.toggled.connect(self.handleAddMiso)
         self.ui.activeProfileCB.currentIndexChanged.connect(self.profileChange )
         self.ui.activeNoteTypeCB.currentIndexChanged.connect(self.noteTypeChange)
         self.ui.activeCardTypeCB.currentIndexChanged.connect(self.selectionChange)
@@ -283,22 +290,22 @@ class JSGui(QScrollArea):
         self.ui.searchRulesLE.returnPressed.connect(self.initRuleSearch)
         self.ui.searchRulesButton.clicked.connect(self.initRuleSearch)
 
-        self.ui.migakuInfoSite.clicked.connect(lambda: openLink('https://migaku.io'))
-        self.ui.migakuPatreonIcon.clicked.connect(lambda: openLink('https://www.patreon.com/Migaku'))
-        self.ui.migakuInfoYT.clicked.connect(lambda: openLink('https://www.youtube.com/channel/UCQFe3x4WAgm7joN5daMm5Ew'))
-        self.ui.migakuInfoTW.clicked.connect(lambda: openLink('https://twitter.com/Migaku_Yoga'))
-        self.ui.gitHubIcon.clicked.connect(lambda: openLink('https://github.com/migaku-official/Migaku-Japanese-Addon'))
+        # self.ui.misoInfoSite.clicked.connect(lambda: openLink('https://miso.io'))
+        # self.ui.misoPatreonIcon.clicked.connect(lambda: openLink('https://www.patreon.com/Miso'))
+        # self.ui.misoInfoYT.clicked.connect(lambda: openLink('https://www.youtube.com/channel/UCQFe3x4WAgm7joN5daMm5Ew'))
+        # self.ui.misoInfoTW.clicked.connect(lambda: openLink('https://twitter.com/Miso_Yoga'))
+        # self.ui.gitHubIcon.clicked.connect(lambda: openLink('https://github.com/miso-official/Miso-Japanese-Addon'))
 
     def initRuleSearch(self):
         text = self.ui.searchRulesLE.text()
         if text == '':
-            self.ueMng.model.ascendingOrder()
-            self.ueMng.model.setFilterByColumn(text)
+            self.ueMng.note_type.ascendingOrder()
+            self.ueMng.note_type.setFilterByColumn(text)
             self.updateRuleCounter()   
             self.ui.rulesTable.scrollToTop()
         else:
-            self.ueMng.model.testData(text)
-            self.ueMng.model.setFilterByColumn(text)
+            self.ueMng.note_type.testData(text)
+            self.ueMng.note_type.setFilterByColumn(text)
             self.updateRuleCounter()   
             self.ui.rulesTable.scrollToTop() 
         return
@@ -347,8 +354,8 @@ class JSGui(QScrollArea):
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self,"Select an Overwrite Rules List", "",'JSON Files (*.json)', options=options)
         if fileName:
-            self.importW = QWidget(self, Qt.Window)
-            self.importW.setWindowModality(Qt.ApplicationModal)
+            self.importW = QWidget(self, Qt.WindowType.Window)
+            self.importW.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.importW.setWindowTitle('Import Overwrite Rules List')
             vLayout = QVBoxLayout()
             hLayout1 = QHBoxLayout()
@@ -396,8 +403,8 @@ class JSGui(QScrollArea):
                 else:
                     miInfo(str(imported[0]) +' rules have been imported.<br>' + str(imported[1]) + ' rules have been ignored because they conflicted with existing rules.', level = 'not')
             self.ueMng.setupModel(self)
-            self.ui.rulesTable.setModel(self.ueMng.model)
-            self.ueMng.model.ascendingOrder()
+            self.ui.rulesTable.setModel(self.ueMng.note_type)
+            self.ueMng.note_type.ascendingOrder()
             self.updateRuleCounter()
             window.hide()
             
@@ -428,11 +435,11 @@ class JSGui(QScrollArea):
     def disableSep(self, sep):
         sep.setEnabled(False)    
 
-    def handleAddMigaku(self):
-        if self.ui.addMigakuNoteType.isChecked():
-            if not self.checkMigakuNoteExistence():
-                self.addMigakuNoteTypeOnApply = True
-                self.resetMigakuActiveFields()
+    def handleAddMiso(self):
+        if self.ui.addMisoNoteType.isChecked():
+            if not self.checkMisoNoteExistence():
+                self.addMisoNoteTypeOnApply = True
+                self.resetMisoActiveFields()
 
     def loadLookAhead(self):
         self.ui.lookAhead.setValue(self.config['LookAhead'])
@@ -496,28 +503,28 @@ class JSGui(QScrollArea):
         if options[2].lower() == 'on' :
             accents.setChecked(True)
 
-    def resetMigakuActiveFields(self):
-        self.removeMigakuFields()
-        self.addMigakuFields()
+    def resetMisoActiveFields(self):
+        self.removeMisoFields()
+        self.addMisoFields()
         
-    def checkMigakuNoteExistence(self):
+    def checkMisoNoteExistence(self):
         models = self.mw.col.models.all()
         for model in models:
-            if model['name'] == 'Migaku Japanese':
+            if model['name'] == 'Miso Japanese':
                 return True
         return False
 
-    def removeMigakuFields(self):
+    def removeMisoFields(self):
         afList = self.ui.listWidget
         for i in reversed(range(afList.rowCount())):
-            if afList.item(i, 1).text() == 'Migaku Japanese':
+            if afList.item(i, 1).text() == 'Miso Japanese':
                 self.ui.listWidget.removeRow(i)
 
 
-    def addMigakuFields(self):
-        self.addToList('All', 'Migaku Japanese', 'Sentence', 'Expression', 'Front', 'Colored Hover')
-        self.addToList('All', 'Migaku Japanese', 'Sentence', 'Expression', 'Back', 'Colored Kanji Reading')
-        self.addToList('All', 'Migaku Japanese', 'Sentence', 'Meaning', 'Back', 'Colored Hover')
+    def addMisoFields(self):
+        self.addToList('All', 'Miso Japanese', 'Sentence', 'Expression', 'Front', 'Colored Hover')
+        self.addToList('All', 'Miso Japanese', 'Sentence', 'Expression', 'Back', 'Colored Kanji Reading')
+        self.addToList('All', 'Miso Japanese', 'Sentence', 'Meaning', 'Back', 'Colored Hover')
 
     def handleAutoCSSJS(self):
         if self.ui.autoCSSJS.isChecked():
@@ -528,7 +535,7 @@ class JSGui(QScrollArea):
             self.ui.activeSideCB.setEnabled(True)
             self.ui.activeDisplayTypeCB.setEnabled(True)
             self.ui.activeActionButton.setEnabled(True)
-            self.ui.addMigakuNoteType.setEnabled(True)
+            self.ui.addMisoNoteType.setEnabled(True)
             self.ui.listWidget.setEnabled(True)
 
         else:
@@ -539,7 +546,7 @@ class JSGui(QScrollArea):
             self.ui.activeSideCB.setEnabled(False)
             self.ui.activeDisplayTypeCB.setEnabled(False)
             self.ui.activeActionButton.setEnabled(False)
-            self.ui.addMigakuNoteType.setEnabled(False)
+            self.ui.addMisoNoteType.setEnabled(False)
             self.ui.listWidget.setEnabled(False)
 
     def selectionChange(self):
@@ -580,29 +587,29 @@ class JSGui(QScrollArea):
                     prof = 'All'
                 self.addToList(prof, afl[2], afl[3], afl[4], afl[5][0].upper() + afl[5][1:].lower() , self.displayTranslation[dt])
 
-    def saveCSSJSAddMigaku(self):
-        migaku = 'off'
+    def saveCSSJSAddMiso(self):
+        miso = 'off'
         css = 'off'
         if self.ui.autoCSSJS.isChecked():
             css = 'on'
-        if self.ui.addMigakuNoteType.isChecked():
-            migaku = 'on'
-        return css, migaku;   
+        if self.ui.addMisoNoteType.isChecked():
+            miso = 'on'
+        return css, miso;   
 
     def saveConfiguration(self):
         sc, wc = self.saveSentenceWordConfig()
         ffs, la = self.saveNumberConfigOptions()
         ac, gc = self.saveAudioGraphsConfig()
         colors = self.saveHANOK()
-        addmigaku, bo, autocss, ds, goh, gohb, kc, poc = self.saveBinaryOptions()
+        addmiso, bo, autocss, ds, goh, gohb, kc, poc = self.saveBinaryOptions()
         newConf = {"ActiveFields" : self.saveActiveFields(), "Individual:Kana;DictForm;Pitch;Audio;Graphs" : wc, "Group:Kana;DictForm;Pitch;Audio;Graphs": sc,
          "FuriganaFontSize" : ffs, "LookAhead" : la, "Profiles" : self.saveProfilesConfig(),
-         "AudioFields" : ac, "PitchGraphFields" :  gc, "ColorsHANOK" : colors, "AddMigakuJapaneseTemplate": addmigaku, "BufferedOutput" :  bo,
+         "AudioFields" : ac, "PitchGraphFields" :  gc, "ColorsHANOK" : colors, "AddMisoJapaneseTemplate": addmiso, "BufferedOutput" :  bo,
          "AutoCssJsGeneration" : autocss, "DisplayShapes" : ds, "GraphOnHover" : goh, "GraphOnHoverBack" : gohb, "KatakanaConversion" : kc, "PlayAudioOnClick" : poc,
          "HistoricalConversion" : self.saveHistoricalConversion()
 
          }
-        if self.addMigakuNoteTypeOnApply:
+        if self.addMisoNoteTypeOnApply:
             self.modeler.addModels()
         self.mw.addonManager.writeConfig(__name__, newConf)
         removeLegacy = self.ui.removeLegacy.isChecked()
@@ -622,7 +629,7 @@ class JSGui(QScrollArea):
             return 'off'
 
     def saveBinaryOptions(self):
-        addmigaku = 'off'
+        addmiso = 'off'
         bo = 'off'
         autocss = 'off'
         ds = 'off'
@@ -630,8 +637,8 @@ class JSGui(QScrollArea):
         gohb = 'off'
         kc = 'off'
         poc = 'off'
-        if self.ui.addMigakuNoteType.isChecked():
-            addmigaku = 'on'
+        if self.ui.addMisoNoteType.isChecked():
+            addmiso = 'on'
         if self.ui.bufferedOutput.isChecked():
             bo = 'on'
         if self.ui.autoCSSJS.isChecked():
@@ -646,7 +653,7 @@ class JSGui(QScrollArea):
             kc = 'on'
         if self.ui.audioOnClick.isChecked():
             poc = 'on'
-        return addmigaku, bo, autocss, ds, goh, gohb, kc, poc;
+        return addmiso, bo, autocss, ds, goh, gohb, kc, poc;
 
     def saveHANOK(self):
         return [self.ui.heibanColor.text(), self.ui.atamadakaColor.text(), self.ui.nakadakaColor.text(), self.ui.odakaColor.text(), self.ui.kifukuColor.text()]
@@ -868,7 +875,7 @@ class JSGui(QScrollArea):
             prof = self.ui.activeProfileCB.currentText()
             for noteType in self.ciSort(self.cA[prof]):
                     self.ui.activeNoteTypeCB.addItem(noteType)
-                    self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, noteType + ' (Prof:' + prof + ')',Qt.ToolTipRole)
+                    self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, noteType + ' (Prof:' + prof + ')',Qt.ItemDataRole.ToolTipRole)
                     self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, prof + ':pN:' + noteType)
         self.loadCardTypesFields()
         self.changingProfile = False
@@ -887,10 +894,10 @@ class JSGui(QScrollArea):
         curProf, curNote = self.ui.activeNoteTypeCB.itemData(self.ui.activeNoteTypeCB.currentIndex()).split(':pN:')     
         for cardType in self.cA[curProf][curNote]['cardTypes']:
             self.ui.activeCardTypeCB.addItem(cardType)
-            self.ui.activeCardTypeCB.setItemData(self.ui.activeCardTypeCB.count() - 1, cardType,Qt.ToolTipRole)
+            self.ui.activeCardTypeCB.setItemData(self.ui.activeCardTypeCB.count() - 1, cardType,Qt.ItemDataRole.ToolTipRole)
         for field in self.cA[curProf][curNote]['fields']:
             self.ui.activeFieldCB.addItem(field)
-            self.ui.activeFieldCB.setItemData(self.ui.activeFieldCB.count() - 1, field,Qt.ToolTipRole)
+            self.ui.activeFieldCB.setItemData(self.ui.activeFieldCB.count() - 1, field,Qt.ItemDataRole.ToolTipRole)
         return
 
     def updateCurrentProfileInfo(self, colA):
@@ -927,7 +934,7 @@ class JSGui(QScrollArea):
         self.ui.activeSideCB.setToolTip(self.sideTT)
         self.ui.activeDisplayTypeCB.setToolTip(self.displayTypeTT)
         self.ui.autoCSSJS.setToolTip('If checked, the addon will manage the CSS and JS of all note and card types designated in the active fields list below.\nIf this is disabled the user is responsible for ensuring that their CSS and JS functions as they wish.')
-        self.ui.addMigakuNoteType.setToolTip('If checked, the addon will attempt to add the Migaku Japanese Note Type if it does not already exist.\nIt will also regenerate the active fields for the Migaku Japanese Note Type.')
+        self.ui.addMisoNoteType.setToolTip('If checked, the addon will attempt to add the Miso Japanese Note Type if it does not already exist.\nIt will also regenerate the active fields for the Miso Japanese Note Type.')
         self.ui.profilesCB.setToolTip('These are the profiles that the add-on will be active on.\nWhen set to "All", the add-on will be active on all profiles.')
         self.ui.sentenceKana.setToolTip('When checked, the addon will generate the kana reading of all\nrecognized words within the target field.')
         self.ui.sentenceDictForm.setToolTip('When checked, the addon will generate the dictionary form of all\nrecognized verbs and adjectives within the target field.')
@@ -990,13 +997,13 @@ class JSGui(QScrollArea):
         aP = self.ui.activeProfileCB
         for prof in self.sortedProfiles:
             aP.addItem(prof)
-            aP.setItemData(aP.count() -1, prof, Qt.ToolTipRole)
+            aP.setItemData(aP.count() -1, prof, Qt.ItemDataRole.ToolTipRole)
         self.loadAllNotes()
 
     def loadAllNotes(self):
         for noteType in self.sortedNoteTypes:
             self.ui.activeNoteTypeCB.addItem(noteType[0])
-            self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, noteType[0],Qt.ToolTipRole)
+            self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, noteType[0],Qt.ItemDataRole.ToolTipRole)
             self.ui.activeNoteTypeCB.setItemData(self.ui.activeNoteTypeCB.count() - 1, noteType[1])
 
     def clearAllAF(self):
@@ -1012,15 +1019,15 @@ class JSGui(QScrollArea):
         aP.addItem('All')
         aP.addItem('──────────────────')
         aP.model().item(aP.count() - 1).setEnabled(False)
-        aP.model().item(aP.count() - 1).setTextAlignment(Qt.AlignCenter)
+        aP.model().item(aP.count() - 1).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         self.loadAllProfiles()  
         self.loadCardTypesFields()
         for key, value in self.sides.items():
             self.ui.activeSideCB.addItem(key)
-            self.ui.activeSideCB.setItemData(self.ui.activeSideCB.count() - 1, value ,Qt.ToolTipRole)
+            self.ui.activeSideCB.setItemData(self.ui.activeSideCB.count() - 1, value ,Qt.ItemDataRole.ToolTipRole)
         for key, value in self.displayTypes.items():
             self.ui.activeDisplayTypeCB.addItem(key)
-            self.ui.activeDisplayTypeCB.setItemData(self.ui.activeDisplayTypeCB.count() - 1, value[1] ,Qt.ToolTipRole)
+            self.ui.activeDisplayTypeCB.setItemData(self.ui.activeDisplayTypeCB.count() - 1, value[1] ,Qt.ItemDataRole.ToolTipRole)
             self.ui.activeDisplayTypeCB.setItemData(self.ui.activeDisplayTypeCB.count() - 1, value[0])
 
     def loadProfileCB(self):
@@ -1028,10 +1035,10 @@ class JSGui(QScrollArea):
         pcb.addItem('All')
         pcb.addItem('──────')
         pcb.model().item(pcb.count() - 1).setEnabled(False)
-        pcb.model().item(pcb.count() - 1).setTextAlignment(Qt.AlignCenter)
+        pcb.model().item(pcb.count() - 1).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         for prof in self.cA:
             pcb.addItem(prof)
-            pcb.setItemData(pcb.count() -1, prof, Qt.ToolTipRole)
+            pcb.setItemData(pcb.count() -1, prof, Qt.ItemDataRole.ToolTipRole)
 
     def loadProfilesList(self):
         pl = self.ui.profilesList
@@ -1060,12 +1067,12 @@ class JSGui(QScrollArea):
         self.ui.audioFieldsCB.addItem('Clipboard')
         self.ui.audioFieldsCB.addItem('──────────────────')
         self.ui.audioFieldsCB.model().item(self.ui.audioFieldsCB.count() - 1).setEnabled(False)
-        self.ui.audioFieldsCB.model().item(self.ui.audioFieldsCB.count() - 1).setTextAlignment(Qt.AlignCenter)
+        self.ui.audioFieldsCB.model().item(self.ui.audioFieldsCB.count() - 1).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         self.ui.audioFieldsCB.addItems(self.allFields)
         self.ui.pitchGraphsCB.addItem('Clipboard')
         self.ui.pitchGraphsCB.addItem('──────────────────')
         self.ui.pitchGraphsCB.model().item(self.ui.pitchGraphsCB.count() - 1).setEnabled(False)
-        self.ui.pitchGraphsCB.model().item(self.ui.pitchGraphsCB.count() - 1).setTextAlignment(Qt.AlignCenter)
+        self.ui.pitchGraphsCB.model().item(self.ui.pitchGraphsCB.count() - 1).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
         self.ui.pitchGraphsCB.addItems(self.allFields)
 
     def loadFieldsList(self, audio):

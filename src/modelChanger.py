@@ -1,43 +1,42 @@
 from aqt import mw
-from aqt.browser import ChangeModel
+from aqt import changenotetype
 from anki.hooks import wrap
 from aqt.qt import *
 from aqt.utils import askUser
-
-
+from aqt.forms import changemodel
 
 def addLanguageModels():
-    if not hasattr(mw, "migakuLanguageModels"):
-        mw.migakuLanguageModels = {}
-    mw.migakuLanguageModels["Migaku Japanese Sentence"] = { "valid-targets" : [
-    "Migaku Japanese Sentence", 
-    "Migaku Japanese Vocabulary", 
-    "Migaku Japanese Audio Sentence", 
-    "Migaku Japanese Audio Vocabulary"
+    if not hasattr(mw, "misoLanguageModels"):
+        mw.misoLanguageModels = {}
+    mw.misoLanguageModels["Miso Japanese Sentence"] = { "valid-targets" : [
+    "Miso Japanese Sentence", 
+    "Miso Japanese Vocabulary", 
+    "Miso Japanese Audio Sentence", 
+    "Miso Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.migakuLanguageModels["Migaku Japanese Vocabulary"] = { "valid-targets" : [
-    "Migaku Japanese Sentence", 
-    "Migaku Japanese Vocabulary", 
-    "Migaku Japanese Audio Sentence", 
-    "Migaku Japanese Audio Vocabulary"
+    mw.misoLanguageModels["Miso Japanese Vocabulary"] = { "valid-targets" : [
+    "Miso Japanese Sentence", 
+    "Miso Japanese Vocabulary", 
+    "Miso Japanese Audio Sentence", 
+    "Miso Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.migakuLanguageModels["Migaku Japanese Audio Sentence"] = { "valid-targets" : [
-    "Migaku Japanese Sentence", 
-    "Migaku Japanese Vocabulary", 
-    "Migaku Japanese Audio Sentence", 
-    "Migaku Japanese Audio Vocabulary"
+    mw.misoLanguageModels["Miso Japanese Audio Sentence"] = { "valid-targets" : [
+    "Miso Japanese Sentence", 
+    "Miso Japanese Vocabulary", 
+    "Miso Japanese Audio Sentence", 
+    "Miso Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.migakuLanguageModels["Migaku Japanese Audio Vocabulary"] = { "valid-targets" :  [
-    "Migaku Japanese Sentence", 
-    "Migaku Japanese Vocabulary", 
-    "Migaku Japanese Audio Sentence", 
-    "Migaku Japanese Audio Vocabulary"
+    mw.misoLanguageModels["Miso Japanese Audio Vocabulary"] = { "valid-targets" :  [
+    "Miso Japanese Sentence", 
+    "Miso Japanese Vocabulary", 
+    "Miso Japanese Audio Sentence", 
+    "Miso Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
@@ -45,7 +44,8 @@ def addLanguageModels():
 
 addLanguageModels()
 
-def migakuRebuildTemplateMap(self, key=None, attr=None):
+def misoRebuildTemplateMap(self, key=None, attr=None):
+    print("called misoRebuildTemplateMap")
     if not key:
         key = "t"
         attr = "tmpls"
@@ -86,48 +86,60 @@ def migakuRebuildTemplateMap(self, key=None, attr=None):
     setattr(self, key + "indices", indices)
 
 
-def migakuModelChanged(self, model):
-    self.changeBetweenMigakuNoteTypes = False
+def misoModelChanged(self, model):
+    print("called misoModelChanged")
+
+    self.changeBetweenMisoNoteTypes = False
     self.targetModel = model
-    predeterminedTemplateAndFieldMap = changeIsBetweenValidMigakuNoteTypes(self.oldModel, self.targetModel)
+    predeterminedTemplateAndFieldMap = changeIsBetweenValidMisoNoteTypes(self.oldModel, self.targetModel)
     if predeterminedTemplateAndFieldMap:
-        self.changeBetweenMigakuNoteTypes = predeterminedTemplateAndFieldMap
-        if not hasattr(self, "migakuLabels") or not self.migakuLabels:
+        self.changeBetweenMisoNoteTypes = predeterminedTemplateAndFieldMap
+        if not hasattr(self, "misoLabels") or not self.misoLabels:
             replaceTemplateMap(self)
     else:
-        maybeRemoveMigakuLabel(self)
+        maybeRemoveMisoLabel(self)
         self.rebuildTemplateMap()
         self.rebuildFieldMap()
 
 def getFieldNameList(fieldData):
+    print("called getFieldNameList")
+
     return [field['name'] for field in fieldData]
 
-def fieldsAreTheSameAsTheDefault(testedNoteType, migakuNoteType):
+def fieldsAreTheSameAsTheDefault(testedNoteType, misoNoteType):
+    print("called fieldsAreTheSameAsTheDefault")
+
     testedFields = getFieldNameList(testedNoteType["flds"])
-    migakuFields = migakuNoteType["fields"]
-    fieldsThatDontOccurInBoth = list(set(migakuFields)^set(testedFields))
+    misoFields = misoNoteType["fields"]
+    fieldsThatDontOccurInBoth = list(set(misoFields)^set(testedFields))
     if len(fieldsThatDontOccurInBoth) == 0:
         return True
     return False
 
-def changeIsBetweenValidMigakuNoteTypes(originalNoteType, targetNoteType):
-    if originalNoteType["name"] in mw.migakuLanguageModels.keys():
-        originMigakuNoteType = mw.migakuLanguageModels[originalNoteType["name"]]
-        if onlyOneCardTypeInNoteType(originalNoteType) and fieldsAreTheSameAsTheDefault(originalNoteType, originMigakuNoteType):
-            if targetNoteType["name"] in originMigakuNoteType["valid-targets"]:
-                destinationMigakuNoteType = mw.migakuLanguageModels[targetNoteType["name"]]
-                if onlyOneCardTypeInNoteType(targetNoteType) and fieldsAreTheSameAsTheDefault(targetNoteType, destinationMigakuNoteType):
+def changeIsBetweenValidMisoNoteTypes(originalNoteType, targetNoteType):
+    print("called changeIsBetweenValidMisoNoteTypes")
+
+    if originalNoteType["name"] in mw.misoLanguageModels.keys():
+        originMisoNoteType = mw.misoLanguageModels[originalNoteType["name"]]
+        if onlyOneCardTypeInNoteType(originalNoteType) and fieldsAreTheSameAsTheDefault(originalNoteType, originMisoNoteType):
+            if targetNoteType["name"] in originMisoNoteType["valid-targets"]:
+                destinationMisoNoteType = mw.misoLanguageModels[targetNoteType["name"]]
+                if onlyOneCardTypeInNoteType(targetNoteType) and fieldsAreTheSameAsTheDefault(targetNoteType, destinationMisoNoteType):
                     fieldMap = generateFieldOrdinateMap(originalNoteType, targetNoteType)
                     templateMap = {0 : 0}
                     return [templateMap, fieldMap]
     return False
 
 def onlyOneCardTypeInNoteType(noteType):
+    print("called onlyOneCardTypeInNoteType")
+
     if len(noteType["tmpls"]) == 1:
         return True
     return False
 
 def generateFieldOrdinateMap(originalNoteType, targetNoteType):
+    print("called generateFieldOrdinateMap")
+
     ogFields = originalNoteType["flds"]
     tFields = targetNoteType["flds"]
     fieldMap = {}
@@ -139,71 +151,77 @@ def generateFieldOrdinateMap(originalNoteType, targetNoteType):
     return fieldMap 
 
 def getOrdinalForName(name, fields):
+    print("called getOrdinalForName")
+
     for field in fields:
         if field["name"] == name:
             return field["ord"]
 
 {'name': 'Sentence', 'ord': 0, 'sticky': False, 'rtl': False, 'font': 'Arial', 'size': 20}
 
-def maybeRemoveMigakuLabel(self):
-    if hasattr(self, "migakuLabels") and self.migakuLabels:
+def maybeRemoveMisoLabel(self):
+    print("called maybeRemoveMisoLabel")
+
+    if hasattr(self, "misoLabels") and self.misoLabels:
         keys = ["t", "f"]
         for key in keys:
             lay = getattr(self, key + "layout")
-            lay.removeWidget(self.migakuLabels[key])
-            self.migakuLabels[key].deleteLater()
-    self.migakuLabels = False   
+            lay.removeWidget(self.misoLabels[key])
+            self.misoLabels[key].deleteLater()
+    self.misoLabels = False   
 
 
 
 def replaceTemplateMap(self):
-    self.migakuLabels = {}
+    print("called replaceTemplateMap")
+
+    self.misoLabels = {}
     keys = ["t", "f"]
     for key in keys:
         map = getattr(self, key + "widg")
         lay = getattr(self, key + "layout")
-        self.migakuLabels[key] = QLabel('Migaku will automatically convert between these Note Types\nfor you. Simply press the "OK" button to proceed.')
-        lay.addWidget(self.migakuLabels[key])
+        self.misoLabels[key] = QLabel('Miso will automatically convert between these Note Types\nfor you. Simply press the "OK" button to proceed.')
+        lay.addWidget(self.misoLabels[key])
         if map:
             lay.removeWidget(map)
             map.deleteLater()
             setattr(self, key + "MapWidget", None)
 
-def migakuAccept(self):
-        # check maps
-        if hasattr(self, "changeBetweenMigakuNoteTypes") and self.changeBetweenMigakuNoteTypes is not False:
-            cmap, fmap = self.changeBetweenMigakuNoteTypes
-        else:
-            fmap = self.getFieldMap()
-            cmap = self.getTemplateMap()
-        if any(True for c in list(cmap.values()) if c is None):
-            if not askUser(
+def misoAccept(self):
+    # check maps
+    if hasattr(self, "changeBetweenMisoNoteTypes") and self.changeBetweenMisoNoteTypes is not False:
+        cmap, fmap = self.changeBetweenMisoNoteTypes
+    else:
+        fmap = self.getFieldMap()
+        cmap = self.getTemplateMap()
+    if any(True for c in list(cmap.values()) if c is None):
+        if not askUser(
                 _(
                     """\
 Any cards mapped to nothing will be deleted. \
 If a note has no remaining cards, it will be lost. \
 Are you sure you want to continue?"""
                 )
-            ):
-                return
-        self.browser.mw.checkpoint(_("Change Note Type"))
-        b = self.browser
-        b.mw.col.modSchema(check=True)
-        b.mw.progress.start()
-        b.model.beginReset()
-        mm = b.mw.col.models
-        mm.change(self.oldModel, self.nids, self.targetModel, fmap, cmap)
-        b.search()
-        b.model.endReset()
-        b.mw.progress.finish()
-        b.mw.reset()
-        self.cleanup()
-        QDialog.accept(self)
+        ):
+            return
+    self.browser.mw.checkpoint(_("Change Note Type"))
+    b = self.browser
+    b.mw.col.modSchema(check=True)
+    b.mw.progress.start()
+    b.note_type.beginReset()
+    mm = b.mw.col.note_types
+    mm.change(self.oldModel, self.nids, self.targetModel, fmap, cmap)
+    b.search()
+    b.note_type.endReset()
+    b.mw.progress.finish()
+    b.mw.reset()
+    self.cleanup()
+    QDialog.accept(self)
 
-if not hasattr(ChangeModel, "migakuOveriddenMethods"):
+
+if not hasattr(changemodel, "misoOveriddenMethods"):
     print("ADDED THROUGH JP")
-    ChangeModel.migakuOveriddenMethods = True
-    ChangeModel.accept = migakuAccept
-    ChangeModel.modelChanged = migakuModelChanged
-    ChangeModel.rebuildTemplateMap = migakuRebuildTemplateMap
-
+    changemodel.misoOveriddenMethods = True
+    changemodel.accept = misoAccept
+    changemodel.modelChanged = misoModelChanged
+    changemodel.rebuildTemplateMap = misoRebuildTemplateMap

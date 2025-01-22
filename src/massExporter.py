@@ -15,19 +15,31 @@ class MassExporter:
         self.dictParser = self.exporter.dictParser
         self.addon_path = addon_path
 
-
     def onRegenerate(self, browser):
         import anki.find
         notes = browser.selectedNotes()
         if notes:
             fields = anki.find.fieldNamesForNotes(self.mw.col, notes)
-            generateWidget = QDialog(None, Qt.Window)
-            generateWidget.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'migaku.png')))
+            generateWidget = QDialog(None, Qt.WindowType.Window)
+            generateWidget.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'miso.png')))
             layout = QHBoxLayout()
+
+            # Origin Combo Box
             cbLabel = QLabel()
             cbLabel.setText('Origin:')
             cb = QComboBox()
             cb.addItems(fields)
+
+            # Destination Combo Box
+            destLabel = QLabel()
+            destLabel.setText('Destination:')
+            dest = QComboBox()
+            dest.addItems(fields)
+
+            # Connect Origin Combo Box to Destination Combo Box
+            cb.currentIndexChanged.connect(lambda index: dest.setCurrentIndex(index))
+
+            # Checkboxes
             b1 = QCheckBox("Furigana")
             b1.setChecked(True)
             b2 = QCheckBox("Dict Form")
@@ -35,23 +47,27 @@ class MassExporter:
             b3 = QCheckBox("Accents")
             b3.setChecked(True)
             b4 = QCheckBox("Audio")
-            b4.setChecked(True)
+            b4.setChecked(False)
             b5 = QCheckBox("Graphs")
-            b5.setChecked(True)
-            destLabel =QLabel()
-            destLabel.setText('Destination:')
-            dest = QComboBox()
-            dest.addItems(fields)
-            addLabel =QLabel()
+            b5.setChecked(False)
+
+            # Overwrite Combo Box
+            addLabel = QLabel()
             addLabel.setText('Overwrite?:')
             addType = QComboBox()
-            addType.addItems(['Add','Overwrite', 'If Empty'])
-            b6 =  QPushButton('Execute')
-            b6.clicked.connect(lambda: self.massGenerate(b1, b2, b3, b4, b5, str(cb.currentText()), notes, generateWidget, str(dest.currentText()), addType.currentText()))
-            b7 =  QPushButton('Remove Readings')
+            addType.addItems(['Overwrite', 'Add', 'If Empty'])
+
+            # Buttons
+            b6 = QPushButton('Execute')
+            b6.clicked.connect(
+                lambda: self.massGenerate(b1, b2, b3, b4, b5, str(cb.currentText()), notes, generateWidget,
+                                          str(dest.currentText()), addType.currentText()))
+            b7 = QPushButton('Remove Readings')
             b7.clicked.connect(lambda: self.massRemove(str(cb.currentText()), notes, generateWidget))
-            b8 =  QPushButton('Remove HTML')
+            b8 = QPushButton('Remove HTML')
             b8.clicked.connect(lambda: self.massRemoveHTML(str(cb.currentText()), notes, generateWidget))
+
+            # Add widgets to layout
             layout.addWidget(cbLabel)
             layout.addWidget(cb)
             layout.addWidget(b1)
@@ -66,13 +82,13 @@ class MassExporter:
             layout.addWidget(b6)
             layout.addWidget(b7)
             layout.addWidget(b8)
+
+            # Set up the dialog
             generateWidget.setWindowTitle("Generate Accents And Furigana")
             generateWidget.setLayout(layout)
-            generateWidget.exec_()
+            generateWidget.exec()
         else:
             miInfo('Please select some cards before attempting to mass generate.', level='err')
-
-
 
     def imgRemove(self, text):
         pattern = r"(?:<img[^<]+?>)"
@@ -96,7 +112,7 @@ class MassExporter:
           return text
 
     def massRemoveHTML(self, field,  notes, generateWidget):
-        if not miAsk('Are you sure you want to mass remove HTML from the "'+ field +'" field? This will not remove images, or "<br>" defined line breaks, but will remove pitch shapes from the previous beta version of the Migaku Japanese Addon.'):
+        if not miAsk('Are you sure you want to mass remove HTML from the "'+ field +'" field? This will not remove images, or "<br>" defined line breaks, but will remove pitch shapes from the previous beta version of the Miso Japanese Addon.'):
             return
         self.mw.checkpoint('Mass HTML Removal')    
         generateWidget.close() 
@@ -105,14 +121,14 @@ class MassExporter:
         bar.setMaximum(len(notes))
         val = 0;  
         for nid in notes:
-            note = self.mw.col.getNote(nid)
-            fields = self.mw.col.models.fieldNames(note.model())
+            note = self.mw.col.get_note(nid)
+            fields = self.mw.col.note_type.field_names(note.note_type())
             if field in fields:
                 text = note[field] 
                 text =  self.removeHTML(text)
                 note[field] = text
-                note.flush()
-            val+=1;
+                self.mw.col.update_note(note, skip_undo_entry=True)
+            val+=1
             bar.setValue(val)
             self.mw.app.processEvents()
         self.mw.progress.finish()
@@ -122,17 +138,17 @@ class MassExporter:
         progressWidget = QWidget(None)
         layout = QVBoxLayout()
         progressWidget.setFixedSize(400, 70)
-        progressWidget.setWindowModality(Qt.ApplicationModal)
+        progressWidget.setWindowModality(Qt.WindowModality.ApplicationModal)
         progressWidget.setWindowTitle('Generating...')
-        progressWidget.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'migaku.png')))
+        progressWidget.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'miso.png')))
         bar = QProgressBar(progressWidget)
-        if isMac:
+        if is_mac:
             bar.setFixedSize(380, 50)
         else:
             bar.setFixedSize(390, 50)
         bar.move(10,10)
         per = QLabel(bar)
-        per.setAlignment(Qt.AlignCenter)
+        per.setAlignment(Qt.AlignmentFlag.AlignCenter)
         progressWidget.show()
         return progressWidget, bar;
 
@@ -146,13 +162,14 @@ class MassExporter:
         bar.setMaximum(len(notes))
         val = 0;  
         for nid in notes:
-            note = self.mw.col.getNote(nid)
-            fields = self.mw.col.models.fieldNames(note.model())
+            note = self.mw.col.get_note(nid)
+            fields = self.mw.col.note_type.field_names(note.note_type())
             if field in fields:
                 text = note[field] 
                 text =  self.exporter.removeBrackets(text)
                 note[field] = text
-                note.flush()
+                self.mw.col.update_note(note, skip_undo_entry=True)
+                # note.flush()
             val+=1;
             bar.setValue(val)
             self.mw.app.processEvents()
@@ -169,7 +186,7 @@ class MassExporter:
         bar.setMaximum(len(notes))
         val = 0;  
         for nid in notes:
-            note = self.mw.col.getNote(nid)
+            note = self.mw.col.get_note(nid)
             fields = self.mw.col.models.fieldNames(note.model())
             if field in fields and dest in fields:
                 text = note[field] 
@@ -202,8 +219,9 @@ class MassExporter:
                         note[dest] = self.exporter.convertMalformedSpaces(text)
                 if audioGraphList:
                     self.exporter.addVariants(audioGraphList, note)
-                if text or audioGraphList:       
-                    note.flush()
+                if text or audioGraphList:
+                    self.mw.col.update_note(note, skip_undo_entry=True)
+                    # note.flush()
             val+=1;
             bar.setValue(val)
             self.mw.app.processEvents()

@@ -1,6 +1,6 @@
 {
   "Profiles": ["all"],
-  "AddMigakuJapaneseTemplate": "on",
+  "AddMisoJapaneseTemplate": "on",
   "LookAhead": 25,
   "FuriganaFontSize": 4,
   "BufferedOutput": "off",
@@ -17,31 +17,31 @@
   "AudioFields": "Audio,Word Audio;overwrite",
   "PlayAudioOnClick": "on",
   "ActiveFields": [
-    "coloredhover;all;Migaku Japanese;Sentence;Expression;front",
-    "coloredkanjireading;all;Migaku Japanese;Sentence;Expression;back",
-    "coloredhover;all;Migaku Japanese;Sentence;Meaning;back",
+    "coloredhover;all;Miso Japanese;Sentence;Expression;front",
+    "coloredkanjireading;all;Miso Japanese;Sentence;Expression;back",
+    "coloredhover;all;Miso Japanese;Sentence;Meaning;back",
 
     "coloredhover;all;MIA Japanese;Sentence;Expression;front",
     "coloredkanjireading;all;MIA Japanese;Sentence;Expression;back",
     "coloredhover;all;MIA Japanese;Sentence;Meaning;back",
 
-    "coloredhover;all;Migaku Japanese Sentence;Standard;Sentence;front",
-    "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Sentence;back",
-    "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Target Word;back",
-    "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Definitions;back",
+    "coloredhover;all;Miso Japanese Sentence;Standard;Sentence;front",
+    "coloredkanjireading;all;Miso Japanese Sentence;Standard;Sentence;back",
+    "coloredkanjireading;all;Miso Japanese Sentence;Standard;Target Word;back",
+    "coloredkanjireading;all;Miso Japanese Sentence;Standard;Definitions;back",
 
-    "coloredhover;all;Migaku Japanese Vocabulary;Standard;Target Word;front",
-    "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Target Word;back",
-    "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Definitions;back",
-    "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Sentence;back",
+    "coloredhover;all;Miso Japanese Vocabulary;Standard;Target Word;front",
+    "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Target Word;back",
+    "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Definitions;back",
+    "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Sentence;back",
 
-    "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Target Word;back",
-    "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Definitions;back",
-    "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Sentence;back",
+    "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Target Word;back",
+    "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Definitions;back",
+    "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Sentence;back",
 
-    "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Target Word;back",
-    "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Definitions;back",
-    "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Sentence;back"
+    "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Target Word;back",
+    "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Definitions;back",
+    "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Sentence;back"
 
   ],
   "displayAgain": true

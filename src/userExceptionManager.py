@@ -72,7 +72,7 @@ class OgOvFilter(QSortFilterProxyModel):
         return True
 
     def headerData(self, section, orientation, role):
-        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Vertical and role == Qt.ItemDataRole.DisplayRole:
             return section + 1
         return super(OgOvFilter, self).headerData(section, orientation, role)
 
@@ -92,13 +92,13 @@ class RulesModel(QAbstractTableModel):
     def columnCount(self, index=QModelIndex()):
         return 2
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
 
         if not 0 <= index.row() < len(self.ueList):
             return None
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == Qt.ItemDataRole.DisplayRole or role ==  Qt.ItemDataRole.EditRole:
             original = self.ueList[index.row()][0]
             overwrite = self.ueList[index.row()][1]
             
@@ -109,16 +109,16 @@ class RulesModel(QAbstractTableModel):
         return None
 
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             if section == 0:
                 return "Original"
             elif section == 1:
                 return "Overwrite"
-        if orientation == Qt.Vertical:
+        if orientation == Qt.Orientation.Vertical:
             return section + 1;
         return None
 
@@ -142,8 +142,8 @@ class RulesModel(QAbstractTableModel):
         self.mng.saveUEList()
         return True
 
-    def setData(self, index, value, role=Qt.EditRole, overwriteRule = False, ruleDict = None):
-        if role != Qt.EditRole:
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole, overwriteRule = False, ruleDict = None):
+        if role != Qt.ItemDataRole.EditRole:
             return False
 
         if overwriteRule and ruleDict['row'] < len(self.ueList):
@@ -190,7 +190,7 @@ class UserExceptionManager:
         self.addon_path = addon_path
         self.listPath = False 
         self.activeFields = False
-        self.model = False
+        self.note_type = False
 
     def getListPath(self):
         return join(self.mw.col.media.dir(), '_userExceptionList.json')
@@ -206,7 +206,7 @@ class UserExceptionManager:
                 self.addMenu = QWidget(editor)
         else:
             self.addMenu = QWidget(self.mw)
-        self.addMenu.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'migaku.png')))
+        self.addMenu.setWindowIcon(QIcon(join(self.addon_path, 'icons', 'miso.png')))
         self.addMenu.setWindowFlags(Qt.Dialog |Qt.MSWindowsFixedSizeDialogHint)
         self.addMenu.ui = Ui_Form()
         self.addMenu.ui.setupUi(self.addMenu)
@@ -241,7 +241,7 @@ class UserExceptionManager:
 
     def setupModel(self, gui):
         self.proxyFilter = OgOvFilter(RulesModel(self.ueList, self, gui))
-        self.model = self.proxyFilter
+        self.note_type = self.proxyFilter
         self.proxyFilter.setFilterKeyColumn(0)
 
     def addRule(self, original, overwrite, newCards, learnedCards, parentWidget, addMenu = False):
@@ -259,7 +259,7 @@ class UserExceptionManager:
             else:
                 edit = True
         if edit:
-            self.model.setData(None, None, Qt.EditRole, True, {'row': foundId, 'og': original, 'ov': overwrite})
+            self.note_type.setData(None, None, Qt.ItemDataRole.EditRole, True, {'row': foundId, 'og': original, 'ov': overwrite})
         else:
             self.writeRule(original, overwrite)
         if addMenu:
@@ -280,8 +280,8 @@ class UserExceptionManager:
         return False
 
     def writeRule(self, original, overwrite):
-        if self.model:
-            self.model.insertRows(original= original, overwrite= overwrite)
+        if self.note_type:
+            self.note_type.insertRows(original= original, overwrite= overwrite)
         else:
             self.ueList.append([original, overwrite])
         self.saveUEList()
@@ -310,19 +310,19 @@ class UserExceptionManager:
         return False
     
     def getProgressWidget(self, parentWidget, title):
-        progressWidget = QWidget(parentWidget, Qt.Window)
+        progressWidget = QWidget(parentWidget, Qt.WindowType.Window)
         progressWidget.setWindowTitle(title)
         layout = QVBoxLayout()
         progressWidget.setFixedSize(400, 70)
-        progressWidget.setWindowModality(Qt.ApplicationModal)
+        progressWidget.setWindowModality(Qt.WindowModality.ApplicationModal)
         bar = QProgressBar(progressWidget)
-        if isMac:
+        if is_mac:
             bar.setFixedSize(380, 50)
         else:
             bar.setFixedSize(390, 50)
         bar.move(10,10)
         per = QLabel(bar)
-        per.setAlignment(Qt.AlignCenter)
+        per.setAlignment(Qt.AlignmentFlag.AlignCenter)
         progressWidget.show()
         return progressWidget, bar; 
 
@@ -338,13 +338,13 @@ class UserExceptionManager:
         bar.setMaximum(len(notes))
         it = 0
         for nid in notes:
-            note = self.mw.col.getNote(nid)
+            note = self.mw.col.get_note(nid)
             alreadyAltered = False
             if not self.cardMeetsCriteria(note.cards(), newCards, learnedCards):
                 continue
-            noteType = note.model()
+            noteType = note.note_type()
             if noteType['name'] in self.activeFields:
-                fields = self.mw.col.models.fieldNames(note.model())
+                fields = self.mw.col.note_type.field_names(note.note_type())
                 for field in fields:
                     if field in self.activeFields[noteType['name']]:
                         for ogOv in ruleList:
@@ -359,7 +359,8 @@ class UserExceptionManager:
                                 alreadyAltered = True
                                 appliedRules += 1
                                 note[field] = note[field].replace(original, overwrite)
-                        note.flush()
+                        # note.flush()
+                        self.mw.col.update_note(note, skip_undo_entry=True)
             it += 1
             bar.setValue(it)
             self.mw.app.processEvents()            
@@ -377,12 +378,12 @@ class UserExceptionManager:
         return text          
 
     def saveUEList(self):  #saves UE List to file
-        if not self.model: 
+        if not self.note_type: 
             ueList = self.ueList
             with codecs.open(self.listPath, "w","utf-8") as outfile:
                 json.dump(ueList, outfile, ensure_ascii=False) 
         else:
-            self.model.saveList(self.listPath)
+            self.note_type.saveList(self.listPath)
 
     def importUEList(self, fileName, combine, overwriteCollides):  #imports new list overwrite if desired
         try:
@@ -390,7 +391,7 @@ class UserExceptionManager:
                 newList = json.load(importedList)
 
             if combine:
-                tempUEList = self.model.sourceModel().ueList.copy()
+                tempUEList = self.note_type.sourceModel().ueList.copy()
                 dictUEList = dict(tempUEList)
                 totalImported = 0
                 ignoredOrOverwritten = 0
@@ -415,12 +416,12 @@ class UserExceptionManager:
                             totalImported += 1
                         else:
                             ignoredOrOverwritten += 1
-                self.model.sourceModel().ueList = tempUEList
+                self.note_type.sourceModel().ueList = tempUEList
                 self.saveUEList()
                 
                 return [totalImported, ignoredOrOverwritten]       
             else:
-                self.model.sourceModel().ueList = newList
+                self.note_type.sourceModel().ueList = newList
                 self.saveUEList()
          
                 return [len(self.ueList), 0]

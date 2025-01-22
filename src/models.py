@@ -11,26 +11,26 @@ from shutil import copyfile
 class MILanguageModels():
     def __init__(self, mw):
         self.activeFields = [
-          "coloredhover;all;Migaku Japanese Sentence;Standard;Sentence;front",
-          "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Sentence;back",
-          "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Target Word;back",
-          "coloredkanjireading;all;Migaku Japanese Sentence;Standard;Definitions;back",
+          "coloredhover;all;Miso Japanese Sentence;Standard;Sentence;front",
+          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Sentence;back",
+          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Target Word;back",
+          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Definitions;back",
 
-          "coloredhover;all;Migaku Japanese Vocabulary;Standard;Target Word;front",
-          "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Target Word;back",
-          "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Definitions;back",
-          "coloredkanjireading;all;Migaku Japanese Vocabulary;Standard;Sentence;back",
+          "coloredhover;all;Miso Japanese Vocabulary;Standard;Target Word;front",
+          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Target Word;back",
+          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Definitions;back",
+          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Sentence;back",
 
-          "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Target Word;back",
-          "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Definitions;back",
-          "coloredkanjireading;all;Migaku Japanese Audio Vocabulary;Standard;Sentence;back",
+          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Target Word;back",
+          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Definitions;back",
+          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Sentence;back",
 
-          "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Target Word;back",
-          "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Definitions;back",
-          "coloredkanjireading;all;Migaku Japanese Audio Sentence;Standard;Sentence;back"
+          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Target Word;back",
+          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Definitions;back",
+          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Sentence;back"
         ]
         self.svg = '''
-   <svg class="migaku-logo" width="30" height="39" viewBox="0 0 30 39">
+   <svg class="miso-logo" width="30" height="39" viewBox="0 0 30 39">
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"
@@ -60,7 +60,7 @@ src: url(_yumin.ttf);
   font-size: 18px;
 }
 
-.migaku-header {
+.miso-header {
   background: #2880ff;
   text-align: center;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -69,15 +69,15 @@ src: url(_yumin.ttf);
   align-items: center;
 }
 
-.migaku-header h1 {
+.miso-header h1 {
   color: white;
 }
 
-.migaku-logo {
+.miso-logo {
   height: 53px;
 }
 
-.migaku-card {
+.miso-card {
   background: white;
   width: 90vw;
   max-width: 600px;
@@ -86,28 +86,28 @@ src: url(_yumin.ttf);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.migaku-card-content {
+.miso-card-content {
   padding: 20px;
 }
 
-.migaku-card--front {
+.miso-card--front {
   text-align: center;
 }
 
-.migaku-card--back {
+.miso-card--back {
   text-align: center;
 }
 
-.migaku-word-front {
+.miso-word-front {
   font-size: 32px;
 }
 
-.migaku-word-back {
+.miso-word-back {
   font-size: 24px;
   margin-bottom: 10px;
 }
 
-.migaku-card-image img {
+.miso-card-image img {
   width: 90vw;
   max-width: 600px;
   border-top-right-radius: 10px;
@@ -117,9 +117,9 @@ src: url(_yumin.ttf);
   object-fit: contain;
 }
 
-.migaku-sentence,
-.migaku-translation,
-.migaku-definition {
+.miso-sentence,
+.miso-translation,
+.miso-definition {
   width: 100%;
   text-align: left;
   margin-top: 20px;
@@ -128,24 +128,24 @@ src: url(_yumin.ttf);
 }
 
 
-.migaku-sentence{
+.miso-sentence{
   font-size: 25px;
 }
 
-.migaku-translation{
+.miso-translation{
    margin-top: 10px;
     margin-bottom: 10px;
 }
 
 @media (min-width: 762px) {
-  .migaku-header {
+  .miso-header {
     justify-content: start;
     padding-left: 50px;
   }
 }
 
 @media (min-width: 500px) {
-  .migaku-card--back .migaku-card-content {
+  .miso-card--back .miso-card-content {
     display: grid;
     grid-gap: 10px;
     grid-template-areas:
@@ -164,53 +164,53 @@ src: url(_yumin.ttf);
     grid-area: definition;
   }
 
-  .migakuEditorInput[style]{
+  .misoEditorInput[style]{
     max-width: 570px !important;
   }
 
-  .migakuEditorInput[data-field="Definitions"][style]{
+  .misoEditorInput[data-field="Definitions"][style]{
     font-size:18px !important;
   }
 
-  .migakuEditorInput[data-field="Sentence"][style]{
+  .misoEditorInput[data-field="Sentence"][style]{
     font-size: 25px !important;
     max-width: 500px !important;
   }
 
-  .migakuEditorInput[data-field="Target Word"][style]{
+  .misoEditorInput[data-field="Target Word"][style]{
     font-size: 24px !important;
     max-width: 500px !important;
   }
 
 
-  .migaku-card--back .migaku-word-audio {
+  .miso-card--back .miso-word-audio {
     grid-area: word-audio;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .migaku-card--back .migaku-word-back {
+  .miso-card--back .miso-word-back {
     grid-area: word;
     text-align: left;
   }
 
-  .migaku-card--back .migaku-sentence-audio {
+  .miso-card--back .miso-sentence-audio {
     grid-area: sentence-audio;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .migaku-card--back .migaku-sentence {
+  .miso-card--back .miso-sentence {
     grid-area: sentence;
   }
 
-  .migaku-card--back .migaku-translation {
+  .miso-card--back .miso-translation {
     grid-area: translation;
   }
 
-  .migaku-card--back .migaku-definition {
+  .miso-card--back .miso-definition {
     grid-area: definition;
   }
 }
@@ -220,19 +220,19 @@ src: url(_yumin.ttf);
   background: #2b303b;
 }
 
-.ankidroid_dark_mode .migaku-header,
-.nightMode .migaku-header {
+.ankidroid_dark_mode .miso-header,
+.nightMode .miso-header {
   background: #f9a746;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.ankidroid_dark_mode .migaku-header h1,
-.ankidroid_dark_mode .migaku-header h1 {
+.ankidroid_dark_mode .miso-header h1,
+.ankidroid_dark_mode .miso-header h1 {
   color: white;
 }
 
-.ankidroid_dark_mode .migaku-card,
-.nightMode .migaku-card {
+.ankidroid_dark_mode .miso-card,
+.nightMode .miso-card {
   position: relative;
   background: #363c4a;
   box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.15);
@@ -241,69 +241,69 @@ src: url(_yumin.ttf);
 
     def getModelList(self):
         modelList = []
-        name = 'Migaku Japanese Sentence'
+        name = 'Miso Japanese Sentence'
         fields = ['Sentence', 'Translation', 'Target Word', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
-        front = '''<div class="migaku-header">
+        front = '''<div class="miso-header">
 %s
 </div>
-<div class="migaku-card migaku-card--front">
-    <div class="migaku-card-content">
-        <span class="migaku-word-front">{{Sentence}}</span>
+<div class="miso-card miso-card--front">
+    <div class="miso-card-content">
+        <span class="miso-word-front">{{Sentence}}</span>
     </div>
 </div>
 '''
-        back = '''<div class="migaku-header">
+        back = '''<div class="miso-header">
 %s
 </div>
-<div class="migaku-card migaku-card--back">
-    <div class="migaku-card-image">
+<div class="miso-card miso-card--back">
+    <div class="miso-card-image">
         {{Image}}
     </div>
-    <div class="migaku-card-content">
-        <div class="migaku-word-back">{{Target Word}}</div>
-        <div class="migaku-word-audio">{{Word Audio}}</div>
-        <div class="migaku-sentence">{{Sentence}}</div>
-        <div class="migaku-sentence-audio">{{Sentence Audio}}</div>
-        <div class="migaku-translation ">{{Translation}}</div>
-        <div class="migaku-definition">{{Definitions}}</div>
+    <div class="miso-card-content">
+        <div class="miso-word-back">{{Target Word}}</div>
+        <div class="miso-word-audio">{{Word Audio}}</div>
+        <div class="miso-sentence">{{Sentence}}</div>
+        <div class="miso-sentence-audio">{{Sentence Audio}}</div>
+        <div class="miso-translation ">{{Translation}}</div>
+        <div class="miso-definition">{{Definitions}}</div>
     </div>
 </div>
 '''
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Migaku Japanese Vocabulary'
+        name = 'Miso Japanese Vocabulary'
         fields = ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
-        front = '''<div class="migaku-header">
+        front = '''<div class="miso-header">
 %s
 </div>
-<div class="migaku-card migaku-card--front">
-    <div class="migaku-card-content">
-        <span class="migaku-word-front">{{Target Word}}</span>
+<div class="miso-card miso-card--front">
+    <div class="miso-card-content">
+        <span class="miso-word-front">{{Target Word}}</span>
     </div>
 </div>
 '''
 
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Migaku Japanese Audio Sentence'
+        name = 'Miso Japanese Audio Sentence'
         fields = ['Sentence', 'Sentence Audio', 'Translation','Target Word', 'Word Audio', 'Definitions', 'Image',]
-        front = '''<div class="migaku-header">
+        front = '''<div class="miso-header">
 %s
 </div>
-<div class="migaku-card migaku-card--front">
-    <div class="migaku-card-content">
-        <span class="migaku-word-front">{{Sentence Audio}}</span>
+<div class="miso-card miso-card--front">
+    <div class="miso-card-content">
+        <span class="miso-word-front">{{Sentence Audio}}</span>
     </div>
 </div>
 '''
 
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Migaku Japanese Audio Vocabulary'
+        name = 'Miso Japanese Audio Vocabulary'
         fields = ['Target Word',  'Sentence', 'Word Audio', 'Sentence Audio', 'Translation', 'Definitions', 'Image']
-        front = '''<div class="migaku-header">
+        front = '''<div class="miso-header">
 %s
 </div>
-<div class="migaku-card migaku-card--front">
-    <div class="migaku-card-content">
-        <span class="migaku-word-front">{{Word Audio}}</span>
+<div class="miso-card miso-card--front">
+    <div class="miso-card-content">
+        <span class="miso-word-front">{{Word Audio}}</span>
     </div>
 </div>
 '''
@@ -316,8 +316,8 @@ src: url(_yumin.ttf);
         config = self.mw.addonManager.getConfig(__name__)
         if config:
             for model in self.modelList:
-                if not self.mw.col.models.byName(model[0]):
-                  if config.get('AddMigakuJapaneseTemplate', False) == "on":
+                if not self.mw.col.models.by_name(model[0]):
+                  if config.get('AddMisoJapaneseTemplate', False) == "on":
                       self.addModel(model)
                       self.addExportTemplates()
                       self.maybeAddActiveFieldsToConfig(config)
@@ -337,14 +337,14 @@ src: url(_yumin.ttf);
         addons = self.mw.addonManager.all_addon_meta()
         for addon in addons:
             dirName = addon.dir_name
-            if dirName in ["Migaku Dictionary", "1655992655"]:
+            if dirName in ["Miso Dictionary", "1655992655"]:
                 self.addExportTemplatesToConfig(dirName)
     
     def addExportTemplatesToConfig(self, dirName):
 
         templates = {
             "Japanese Sentence": {
-              "noteType": "Migaku Japanese Sentence",
+              "noteType": "Miso Japanese Sentence",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -362,7 +362,7 @@ src: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Vocabulary": {
-              "noteType": "Migaku Japanese Vocabulary",
+              "noteType": "Miso Japanese Vocabulary",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -380,7 +380,7 @@ src: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Audio Sentence": {
-              "noteType": "Migaku Japanese Audio Sentence",
+              "noteType": "Miso Japanese Audio Sentence",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -398,7 +398,7 @@ src: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Audio Vocabulary": {
-              "noteType": "Migaku Japanese Audio Vocabulary",
+              "noteType": "Miso Japanese Audio Vocabulary",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",

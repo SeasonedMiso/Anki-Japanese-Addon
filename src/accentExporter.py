@@ -819,7 +819,7 @@ class AccentExporter:
         config = self.getConfig()
         audioCon = config['AudioFields'].split(';')
         graphCon = config['PitchGraphFields'].split(';')
-        fields = self.mw.col.models.fieldNames(note.model())
+        fields = self.mw.col.note_type.field_names(note.note_type())
         aFields = audioCon[0].split(',')
         gFields = graphCon[0].split(',')
         aSep = '<br>'
@@ -891,7 +891,7 @@ class AccentExporter:
             else:
                 self.addToNote(editor, note, field, ordinal, note[field] + sep + text)
         elif overAdd == 'no':
-            if note[field] in ['', '<br>']:
+            if note[field] == ['', '<br>']:
                 self.addToNote(editor, note, field, ordinal, sep.replace('<br>', '', 1) + text)
 
     def addToNote(self, editor, note, field, ordinal, text):

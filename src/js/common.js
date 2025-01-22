@@ -52,12 +52,22 @@ function clean_field(field) {
 }
 
 function is_field(node) {
-  return node.nodeName === "DIV" && node.classList.contains("field");
+  console.log("Checking node:", node);
+  console.log("Node name:", node.nodeName);
+  if (node.classList) {
+    console.log("Node classes:", Array.from(node.classList));
+  } else {
+    console.log("Node has no class list");
+  }
+   return node.nodeName === "DIV" && node.classList.contains("rich-text-input");
 }
+
 function get_field(sel) {
-  var node = sel.baseNode;
+  var node = sel.baseNode || sel.anchorNode || sel.focusNode;
+  console.log("Starting node:", node);
   while (node && !is_field(node)) {
     node = node.parentNode;
+    console.log("Parent Node:", node);
   }
   return node;
 }
