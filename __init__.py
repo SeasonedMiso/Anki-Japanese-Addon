@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#Thanks to Damien Elmes, the Miso Japanese Add-on borrows lightly from his project.
+#Thanks to Damien Elmes, this Japanese Add-on borrows lightly from his project.
 #https://ankiweb.net/shared/info/3918629684
 #
 #Thanks to Asweigart, I use Pyperclip in this project
@@ -7,9 +7,6 @@
 #
 #And thanks to 奈幾乃 for the historical converter code
 #http://mto.herokuapp.com/
-#
-# This is a beta prototype release, when officially released a fully commented version of this project will be added and linked on GitHub
-# The final release will also be organized into individual .py files by functionality.
-# Lucas - Miso Founder
+
 
 from . import main, modelChanger
