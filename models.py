@@ -11,23 +11,23 @@ from shutil import copyfile
 class MILanguageModels():
     def __init__(self, mw):
         self.activeFields = [
-          "coloredhover;all;Miso Japanese Sentence;Standard;Sentence;front",
-          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Sentence;back",
-          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Target Word;back",
-          "coloredkanjireading;all;Miso Japanese Sentence;Standard;Definitions;back",
+          "coloredhover;all;Japanese Sentence;Standard;Sentence;front",
+          "coloredkanjireading;all;Japanese Sentence;Standard;Sentence;back",
+          "coloredkanjireading;all;Japanese Sentence;Standard;Target Word;back",
+          "coloredkanjireading;all;Japanese Sentence;Standard;Definitions;back",
 
-          "coloredhover;all;Miso Japanese Vocabulary;Standard;Target Word;front",
-          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Target Word;back",
-          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Definitions;back",
-          "coloredkanjireading;all;Miso Japanese Vocabulary;Standard;Sentence;back",
+          "coloredhover;all;Japanese Vocabulary;Standard;Target Word;front",
+          "coloredkanjireading;all;Japanese Vocabulary;Standard;Target Word;back",
+          "coloredkanjireading;all;Japanese Vocabulary;Standard;Definitions;back",
+          "coloredkanjireading;all;Japanese Vocabulary;Standard;Sentence;back",
 
-          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Target Word;back",
-          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Definitions;back",
-          "coloredkanjireading;all;Miso Japanese Audio Vocabulary;Standard;Sentence;back",
+          "coloredkanjireading;all;Japanese Audio Vocabulary;Standard;Target Word;back",
+          "coloredkanjireading;all;Japanese Audio Vocabulary;Standard;Definitions;back",
+          "coloredkanjireading;all;Japanese Audio Vocabulary;Standard;Sentence;back",
 
-          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Target Word;back",
-          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Definitions;back",
-          "coloredkanjireading;all;Miso Japanese Audio Sentence;Standard;Sentence;back"
+          "coloredkanjireading;all;Japanese Audio Sentence;Standard;Target Word;back",
+          "coloredkanjireading;all;Japanese Audio Sentence;Standard;Definitions;back",
+          "coloredkanjireading;all;Japanese Audio Sentence;Standard;Sentence;back"
         ]
         self.svg = '''
    <svg class="miso-logo" width="30" height="39" viewBox="0 0 30 39">
@@ -241,7 +241,7 @@ ankiJPPitch: url(_yumin.ttf);
 
     def getModelList(self):
         modelList = []
-        name = 'Miso Japanese Sentence'
+        name = 'Japanese Sentence'
         fields = ['Sentence', 'Translation', 'Target Word', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
         front = '''<div class="miso-header">
 %s
@@ -270,7 +270,7 @@ ankiJPPitch: url(_yumin.ttf);
 </div>
 '''
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Miso Japanese Vocabulary'
+        name = 'Japanese Vocabulary'
         fields = ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
         front = '''<div class="miso-header">
 %s
@@ -283,7 +283,7 @@ ankiJPPitch: url(_yumin.ttf);
 '''
 
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Miso Japanese Audio Sentence'
+        name = 'Japanese Audio Sentence'
         fields = ['Sentence', 'Sentence Audio', 'Translation','Target Word', 'Word Audio', 'Definitions', 'Image',]
         front = '''<div class="miso-header">
 %s
@@ -296,7 +296,7 @@ ankiJPPitch: url(_yumin.ttf);
 '''
 
         modelList.append([name, fields, front%self.svg, back%self.svg])
-        name = 'Miso Japanese Audio Vocabulary'
+        name = 'Japanese Audio Vocabulary'
         fields = ['Target Word',  'Sentence', 'Word Audio', 'Sentence Audio', 'Translation', 'Definitions', 'Image']
         front = '''<div class="miso-header">
 %s
@@ -317,7 +317,7 @@ ankiJPPitch: url(_yumin.ttf);
         if config:
             for model in self.modelList:
                 if not self.mw.col.models.by_name(model[0]):
-                  if config.get('AddMisoJapaneseTemplate', False) == "on":
+                  if config.get('AddJapaneseTemplate', False) == "on":
                       self.addModel(model)
                       self.addExportTemplates()
                       self.maybeAddActiveFieldsToConfig(config)
@@ -337,14 +337,14 @@ ankiJPPitch: url(_yumin.ttf);
         addons = self.mw.addonManager.all_addon_meta()
         for addon in addons:
             dirName = addon.dir_name
-            if dirName in ["Miso Dictionary", "1655992655"]:
+            if dirName in ["Anki-Dictionary-Addon", ""]:
                 self.addExportTemplatesToConfig(dirName)
     
     def addExportTemplatesToConfig(self, dirName):
 
         templates = {
             "Japanese Sentence": {
-              "noteType": "Miso Japanese Sentence",
+              "noteType": "Japanese Sentence",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -362,7 +362,7 @@ ankiJPPitch: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Vocabulary": {
-              "noteType": "Miso Japanese Vocabulary",
+              "noteType": "Japanese Vocabulary",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -380,7 +380,7 @@ ankiJPPitch: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Audio Sentence": {
-              "noteType": "Miso Japanese Audio Sentence",
+              "noteType": "Japanese Audio Sentence",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",
@@ -398,7 +398,7 @@ ankiJPPitch: url(_yumin.ttf);
               "separator": "<br><br>"
             }, 
             "Japanese Audio Vocabulary": {
-              "noteType": "Miso Japanese Audio Vocabulary",
+              "noteType": "Japanese Audio Vocabulary",
               "sentence": "Sentence",
               "secondary": "Translation",
               "notes" : "Definitions",

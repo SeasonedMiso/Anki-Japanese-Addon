@@ -26,7 +26,7 @@ from anki import sound
 from anki.find import Finder
 from anki import Collection
 from aqt.main import AnkiQt
-from . import models as MisoModel
+from . import models as JPModel
 from shutil import copyfile
 from os.path import join, exists
 from aqt.webview import AnkiWebView
@@ -71,7 +71,7 @@ config = mw.addonManager.getConfig(__name__)
 currentNote = False
 currentField = False
 currentKey = False
-mw.MisoJSSettings = None
+mw.JPJSSettings = None
 
 languageModeler = MILanguageModels(mw)
 addHook("profileLoaded", languageModeler.addModels)
@@ -254,42 +254,42 @@ def loadAllProfileInformation():
 
 
 def openGui():
-    if not mw.MisoJSSettings:
-        mw.MisoJSSettings = JSGui(mw, colArray, languageModeler, openGui, mw.CSSJSHandler, UEManager)
-    mw.MisoJSSettings.show()
-    if mw.MisoJSSettings.windowState() == Qt.WindowState.WindowMinimized:
+    if not mw.JPJSSettings:
+        mw.JPJSSettings = JSGui(mw, colArray, languageModeler, openGui, mw.CSSJSHandler, UEManager)
+    mw.JPJSSettings.show()
+    if mw.JPJSSettings.windowState() == Qt.WindowState.WindowMinimized:
         # Window is minimised. Restore it.
-        mw.MisoJSSettings.setWindowState(Qt.WindowNoState)
-    mw.MisoJSSettings.setFocus()
-    mw.MisoJSSettings.activateWindow()
+        mw.JPJSSettings.setWindowState(Qt.WindowNoState)
+    mw.JPJSSettings.setFocus()
+    mw.JPJSSettings.activateWindow()
 
 
 def setupGuiMenu():
     addMenu = False
-    if not hasattr(mw, 'MisoMainMenu'):
-        mw.MisoMainMenu = QMenu('Miso', mw)
+    if not hasattr(mw, 'JPMainMenu'):
+        mw.JPMainMenu = QMenu('Japanese', mw)
         addMenu = True
-    if not hasattr(mw, 'MisoMenuSettings'):
-        mw.MisoMenuSettings = []
-    if not hasattr(mw, 'MisoMenuActions'):
-        mw.MisoMenuActions = []
+    if not hasattr(mw, 'JPMenuSettings'):
+        mw.JPMenuSettings = []
+    if not hasattr(mw, 'JPMenuActions'):
+        mw.JPMenuActions = []
 
     setting = QAction("Japanese Settings", mw)
     setting.triggered.connect(openGui)
-    mw.MisoMenuSettings.append(setting)
+    mw.JPMenuSettings.append(setting)
     action = QAction("Add Parsing Overwrite Rule", mw)
     action.triggered.connect(UEManager.openAddMenu)
-    mw.MisoMenuActions.append(action)
+    mw.JPMenuActions.append(action)
 
-    mw.MisoMainMenu.clear()
-    for act in mw.MisoMenuSettings:
-        mw.MisoMainMenu.addAction(act)
-    mw.MisoMainMenu.addSeparator()
-    for act in mw.MisoMenuActions:
-        mw.MisoMainMenu.addAction(act)
+    mw.JPMainMenu.clear()
+    for act in mw.JPMenuSettings:
+        mw.JPMainMenu.addAction(act)
+    mw.JPMainMenu.addSeparator()
+    for act in mw.JPMenuActions:
+        mw.JPMainMenu.addAction(act)
 
     if addMenu:
-        mw.form.menubar.insertMenu(mw.form.menuHelp.menuAction(), mw.MisoMainMenu)
+        mw.form.menubar.insertMenu(mw.form.menuHelp.menuAction(), mw.JPMainMenu)
 
 
 setupGuiMenu()

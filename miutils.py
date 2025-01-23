@@ -9,13 +9,13 @@ addon_path = dirname(__file__)
 
 def miInfo(text, parent=False, level = 'msg'):
     if level == 'wrn':
-        title = "Miso Japanese - Warning"
+        title = "Japanese - Warning"
     elif level == 'not':
-        title = "Miso Japanese - Notice"
+        title = "Japanese - Notice"
     elif level == 'err':
-        title = "Miso Japanese - Error"
+        title = "Japanese - Error"
     else:
-        title = "Miso Japanese"
+        title = "Japanese"
     if parent is False:
         parent = aqt.mw.app.activeWindow() or aqt.mw
     icon = QIcon(join(addon_path, 'icons', 'miso.png'))
@@ -30,7 +30,7 @@ def miInfo(text, parent=False, level = 'msg'):
 
 def miAsk(text, parent=None, day=True):
     msg = QMessageBox(parent)
-    msg.setWindowTitle("Miso Japanese")
+    msg.setWindowTitle("Japanese")
     msg.setText(text)
     icon = QIcon(join(addon_path, 'icons', 'miso.png'))
     b = msg.addButton(QMessageBox.StandardButton.Yes)

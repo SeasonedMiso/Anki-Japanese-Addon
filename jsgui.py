@@ -26,7 +26,7 @@ import platform
 from aqt.theme import theme_manager
 
 
-class MisoLabel(QLabel):
+class JPLabel(QLabel):
     clicked = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -36,7 +36,7 @@ class MisoLabel(QLabel):
         self.clicked.emit()
 
 
-class MisoSVG(QSvgWidget):
+class JPSVG(QSvgWidget):
     clicked=pyqtSignal()
     def __init__(self, parent=None):
         QSvgWidget.__init__(self, parent)
@@ -55,7 +55,7 @@ class MisoSVG(QSvgWidget):
     def mousePressEvent(self, ev):
         if ev.button() == Qt.LeftButton:  # Emit signal on left-click
             self.clicked.emit()
-        # super(MisoSVG, self).mousePressEvent(ev)
+        # super(JPSVG, self).mousePressEvent(ev)
 
 
 class Ui_Dialog(object):
@@ -67,7 +67,7 @@ class Ui_Dialog(object):
         macLin = False
         if is_mac or is_lin:
             macLin = True
-        Dialog.setObjectName("MisoJapaneseSupportSettings")
+        Dialog.setObjectName("JapaneseSupportSettings")
         Dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
         Dialog.resize(1167, 725)
         Dialog.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
@@ -574,10 +574,10 @@ class Ui_Dialog(object):
         self.autoCSSJS.setText("")
         self.autoCSSJS.setObjectName("autoCSSJS")
         self.gridLayout.addWidget(self.autoCSSJS, 0, 1, 1, 1)
-        self.addMisoNoteType = QCheckBox(self.tab)
-        self.addMisoNoteType.setText("")
-        self.addMisoNoteType.setObjectName("addMisoNoteType")
-        self.gridLayout.addWidget(self.addMisoNoteType, 0, 3, 1, 1)
+        self.addJapaneseNoteType = QCheckBox(self.tab)
+        self.addJapaneseNoteType.setText("")
+        self.addJapaneseNoteType.setObjectName("addJapaneseNoteType")
+        self.gridLayout.addWidget(self.addJapaneseNoteType, 0, 3, 1, 1)
         self.listWidget = QTableWidget(self.tab)
         if is_win and platform.release() == '10' and theme_manager.night_mode != True:
             self.listWidget.setStyleSheet(
@@ -752,79 +752,6 @@ class Ui_Dialog(object):
         self.verticalLayout_2.addWidget(self.ruleCounter)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 1, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
-        # self.tab_4 = QWidget()
-        # self.tab_4.setObjectName("tab_4")
-        # self.tab4vl = QVBoxLayout()
-        # self.misoAbout = QGroupBox()
-        # self.misoAbout.setTitle('Miso')
-        # self.misoAboutVL = QVBoxLayout()
-
-        # self.misoAbout.setStyleSheet("QGroupBox { font-weight: bold; } ")
-        # self.misoAboutText = QLabel(
-        #     "This an original Miso add-on. Miso seeks to be a comprehensive platform for acquiring foreign languages. The official Miso website will be published soon!")
-        # self.misoAboutText.setWordWrap(True);
-        # self.misoAboutText.setOpenExternalLinks(True);
-        # self.misoAbout.setLayout(self.misoAboutVL)
-        # self.misoAboutLinksTitle = QLabel("<b>Links<b>")
-        #
-        # self.misoPatreonIcon = self.getSVGWidget('Patreon.svg')
-        # self.misoPatreonIcon.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        #
-        # self.misoAboutLinksHL3 = QHBoxLayout()
-        #
-        # self.misoInfo = QLabel("Miso:")
-        # self.misoInfoYT = self.getSVGWidget('Youtube.svg')
-        # self.misoInfoSite = self.getSVGWidget('miso.svg')
-        # self.misoInfoSite.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        #
-        # self.misoInfoYT.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        #
-        # self.misoInfoTW = self.getSVGWidget('Twitter.svg')
-        # self.misoInfoTW.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        #
-        # self.misoAboutLinksHL3.addWidget(self.misoInfo)
-        # self.misoAboutLinksHL3.addWidget(self.misoInfoSite)
-        # self.misoAboutLinksHL3.addWidget(self.misoInfoYT)
-        # self.misoAboutLinksHL3.addWidget(self.misoInfoTW)
-        # self.misoAboutLinksHL3.addWidget(self.misoPatreonIcon)
-        # self.misoAboutLinksHL3.addStretch()
-        #
-        # self.misoAboutVL.addWidget(self.misoAboutText)
-        # self.misoAboutVL.addWidget(self.misoAboutLinksTitle)
-        #
-        # self.misoAboutVL.addLayout(self.misoAboutLinksHL3)
-        #
-        # self.misoContact = QGroupBox()
-        # self.misoContact.setTitle('Contact Us')
-        # self.misoContactVL = QVBoxLayout()
-        # self.misoContact.setStyleSheet("QGroupBox { font-weight: bold; } ")
-        # self.misoContactText = QLabel(
-        #     "If you would like to report a bug or contribute to the add-on, the best way to do so is by starting a ticket or pull request on GitHub. If you are looking for personal assistance using the add-on, check out the Miso Patreon Discord Server.")
-        # self.misoContactText.setWordWrap(True)
-        #
-        # self.gitHubIcon = self.getSVGWidget('Github.svg')
-        # self.gitHubIcon.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        #
-        # self.misoThanks = QGroupBox()
-        # self.misoThanks.setTitle('A Word of Thanks')
-        # self.misoThanksVL = QVBoxLayout()
-        # self.misoThanks.setStyleSheet("QGroupBox { font-weight: bold; } ")
-        # self.misoThanksText = QLabel(
-        #     "Thanks so much to all Miso supporters! We would not have been able to develop this add-on or any other Miso project without your support!")
-        # self.misoThanksText.setOpenExternalLinks(True)
-        # self.misoThanksText.setWordWrap(True)
-        # self.misoThanksVL.addWidget(self.misoThanksText)
-        #
-        # self.misoContactVL.addWidget(self.misoContactText)
-        # self.misoContactVL.addWidget(self.gitHubIcon)
-        # self.misoContact.setLayout(self.misoContactVL)
-        # self.misoThanks.setLayout(self.misoThanksVL)
-        # self.tab4vl.addWidget(self.misoAbout)
-        # self.tab4vl.addWidget(self.misoContact)
-        # self.tab4vl.addWidget(self.misoThanks)
-        # self.tab4vl.addStretch()
-        # self.tab_4.setLayout(self.tab4vl)
-        # self.tabWidget.addTab(self.tab_4, "")
         self.restoreDefaults = QPushButton(Dialog)
         self.restoreDefaults.setGeometry(QRect(10, 690, 120, 32))
         self.restoreDefaults.setObjectName("restoreDefaults")
@@ -839,7 +766,7 @@ class Ui_Dialog(object):
         QMetaObject.connectSlotsByName(Dialog)
 
     def getSVGWidget(self, name):
-        widget = MisoSVG(join(self.addon_path, 'icons', name))
+        widget = JPSVG(join(self.addon_path, 'icons', name))
         widget.setFixedSize(27, 27)
         return widget
 
@@ -859,7 +786,7 @@ class Ui_Dialog(object):
         self.odakaSelect.setText(_translate("Dialog", "Select Color"))
         self.kifukuSelect.setText(_translate("Dialog", "Select Color"))
         self.activeActionButton.setText(_translate("Dialog", "Add"))
-        self.label_10.setText(_translate("Dialog", "Add Miso Japanese Note Type:"))
+        self.label_10.setText(_translate("Dialog", "Add Japanese Note Type:"))
         self.label_9.setText(_translate("Dialog", "Auto CSS & JS Generation:"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "Active Fields"))
         self.label_37.setText(_translate("Dialog", "Heiban"))

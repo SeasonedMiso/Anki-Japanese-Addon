@@ -6,37 +6,37 @@ from aqt.utils import askUser
 from aqt.forms import changemodel
 
 def addLanguageModels():
-    if not hasattr(mw, "misoLanguageModels"):
-        mw.misoLanguageModels = {}
-    mw.misoLanguageModels["Miso Japanese Sentence"] = { "valid-targets" : [
-    "Miso Japanese Sentence", 
-    "Miso Japanese Vocabulary", 
-    "Miso Japanese Audio Sentence", 
-    "Miso Japanese Audio Vocabulary"
+    if not hasattr(mw, "addonLanguageModels"):
+        mw.addonLanguageModels = {}
+    mw.addonLanguageModels["Japanese Sentence"] = { "valid-targets" : [
+    "Japanese Sentence", 
+    "Japanese Vocabulary", 
+    "Japanese Audio Sentence", 
+    "Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.misoLanguageModels["Miso Japanese Vocabulary"] = { "valid-targets" : [
-    "Miso Japanese Sentence", 
-    "Miso Japanese Vocabulary", 
-    "Miso Japanese Audio Sentence", 
-    "Miso Japanese Audio Vocabulary"
+    mw.addonLanguageModels["Japanese Vocabulary"] = { "valid-targets" : [
+    "Japanese Sentence", 
+    "Japanese Vocabulary", 
+    "Japanese Audio Sentence", 
+    "Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.misoLanguageModels["Miso Japanese Audio Sentence"] = { "valid-targets" : [
-    "Miso Japanese Sentence", 
-    "Miso Japanese Vocabulary", 
-    "Miso Japanese Audio Sentence", 
-    "Miso Japanese Audio Vocabulary"
+    mw.addonLanguageModels["Japanese Audio Sentence"] = { "valid-targets" : [
+    "Japanese Sentence", 
+    "Japanese Vocabulary", 
+    "Japanese Audio Sentence", 
+    "Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
-    mw.misoLanguageModels["Miso Japanese Audio Vocabulary"] = { "valid-targets" :  [
-    "Miso Japanese Sentence", 
-    "Miso Japanese Vocabulary", 
-    "Miso Japanese Audio Sentence", 
-    "Miso Japanese Audio Vocabulary"
+    mw.addonLanguageModels["Japanese Audio Vocabulary"] = { "valid-targets" :  [
+    "Japanese Sentence", 
+    "Japanese Vocabulary", 
+    "Japanese Audio Sentence", 
+    "Japanese Audio Vocabulary"
     ],
     "fields" : ['Target Word', 'Sentence', 'Translation', 'Definitions', 'Image', 'Sentence Audio', 'Word Audio']
     }
@@ -44,8 +44,8 @@ def addLanguageModels():
 
 addLanguageModels()
 
-def misoRebuildTemplateMap(self, key=None, attr=None):
-    print("called misoRebuildTemplateMap")
+def addonRebuildTemplateMap(self, key=None, attr=None):
+    print("called addonRebuildTemplateMap")
     if not key:
         key = "t"
         attr = "tmpls"
@@ -86,18 +86,18 @@ def misoRebuildTemplateMap(self, key=None, attr=None):
     setattr(self, key + "indices", indices)
 
 
-def misoModelChanged(self, model):
-    print("called misoModelChanged")
+def addonModelChanged(self, model):
+    print("called addonModelChanged")
 
-    self.changeBetweenMisoNoteTypes = False
+    self.changeBetweenAddonNoteTypes = False
     self.targetModel = model
-    predeterminedTemplateAndFieldMap = changeIsBetweenValidMisoNoteTypes(self.oldModel, self.targetModel)
+    predeterminedTemplateAndFieldMap = changeIsBetweenValidJPNoteTypes(self.oldModel, self.targetModel)
     if predeterminedTemplateAndFieldMap:
-        self.changeBetweenMisoNoteTypes = predeterminedTemplateAndFieldMap
-        if not hasattr(self, "misoLabels") or not self.misoLabels:
+        self.changeBetweenAddonNoteTypes = predeterminedTemplateAndFieldMap
+        if not hasattr(self, "addonLabels") or not self.addonLabels:
             replaceTemplateMap(self)
     else:
-        maybeRemoveMisoLabel(self)
+        maybeRemoveJPLabel(self)
         self.rebuildTemplateMap()
         self.rebuildFieldMap()
 
@@ -106,25 +106,25 @@ def getFieldNameList(fieldData):
 
     return [field['name'] for field in fieldData]
 
-def fieldsAreTheSameAsTheDefault(testedNoteType, misoNoteType):
+def fieldsAreTheSameAsTheDefault(testedNoteType, addonNoteType):
     print("called fieldsAreTheSameAsTheDefault")
 
     testedFields = getFieldNameList(testedNoteType["flds"])
-    misoFields = misoNoteType["fields"]
-    fieldsThatDontOccurInBoth = list(set(misoFields)^set(testedFields))
+    addonFields = addonNoteType["fields"]
+    fieldsThatDontOccurInBoth = list(set(addonFields)^set(testedFields))
     if len(fieldsThatDontOccurInBoth) == 0:
         return True
     return False
 
-def changeIsBetweenValidMisoNoteTypes(originalNoteType, targetNoteType):
-    print("called changeIsBetweenValidMisoNoteTypes")
+def changeIsBetweenValidJPNoteTypes(originalNoteType, targetNoteType):
+    print("called changeIsBetweenValidJPNoteTypes")
 
-    if originalNoteType["name"] in mw.misoLanguageModels.keys():
-        originMisoNoteType = mw.misoLanguageModels[originalNoteType["name"]]
-        if onlyOneCardTypeInNoteType(originalNoteType) and fieldsAreTheSameAsTheDefault(originalNoteType, originMisoNoteType):
-            if targetNoteType["name"] in originMisoNoteType["valid-targets"]:
-                destinationMisoNoteType = mw.misoLanguageModels[targetNoteType["name"]]
-                if onlyOneCardTypeInNoteType(targetNoteType) and fieldsAreTheSameAsTheDefault(targetNoteType, destinationMisoNoteType):
+    if originalNoteType["name"] in mw.addonLanguageModels.keys():
+        originJPNoteType = mw.addonLanguageModels[originalNoteType["name"]]
+        if onlyOneCardTypeInNoteType(originalNoteType) and fieldsAreTheSameAsTheDefault(originalNoteType, originJPNoteType):
+            if targetNoteType["name"] in originJPNoteType["valid-targets"]:
+                destinationJPNoteType = mw.addonLanguageModels[targetNoteType["name"]]
+                if onlyOneCardTypeInNoteType(targetNoteType) and fieldsAreTheSameAsTheDefault(targetNoteType, destinationJPNoteType):
                     fieldMap = generateFieldOrdinateMap(originalNoteType, targetNoteType)
                     templateMap = {0 : 0}
                     return [templateMap, fieldMap]
@@ -159,38 +159,38 @@ def getOrdinalForName(name, fields):
 
 {'name': 'Sentence', 'ord': 0, 'sticky': False, 'rtl': False, 'font': 'Arial', 'size': 20}
 
-def maybeRemoveMisoLabel(self):
-    print("called maybeRemoveMisoLabel")
+def maybeRemoveJPLabel(self):
+    print("called maybeRemoveJPLabel")
 
-    if hasattr(self, "misoLabels") and self.misoLabels:
+    if hasattr(self, "addonLabels") and self.addonLabels:
         keys = ["t", "f"]
         for key in keys:
             lay = getattr(self, key + "layout")
-            lay.removeWidget(self.misoLabels[key])
-            self.misoLabels[key].deleteLater()
-    self.misoLabels = False   
+            lay.removeWidget(self.addonLabels[key])
+            self.addonLabels[key].deleteLater()
+    self.addonLabels = False   
 
 
 
 def replaceTemplateMap(self):
     print("called replaceTemplateMap")
 
-    self.misoLabels = {}
+    self.addonLabels = {}
     keys = ["t", "f"]
     for key in keys:
         map = getattr(self, key + "widg")
         lay = getattr(self, key + "layout")
-        self.misoLabels[key] = QLabel('Miso will automatically convert between these Note Types\nfor you. Simply press the "OK" button to proceed.')
-        lay.addWidget(self.misoLabels[key])
+        self.addonLabels[key] = QLabel('JP will automatically convert between these Note Types\nfor you. Simply press the "OK" button to proceed.')
+        lay.addWidget(self.addonLabels[key])
         if map:
             lay.removeWidget(map)
             map.deleteLater()
             setattr(self, key + "MapWidget", None)
 
-def misoAccept(self):
+def addonAccent(self):
     # check maps
-    if hasattr(self, "changeBetweenMisoNoteTypes") and self.changeBetweenMisoNoteTypes is not False:
-        cmap, fmap = self.changeBetweenMisoNoteTypes
+    if hasattr(self, "changeBetweenAddonNoteTypes") and self.changeBetweenAddonNoteTypes is not False:
+        cmap, fmap = self.changeBetweenAddonNoteTypes
     else:
         fmap = self.getFieldMap()
         cmap = self.getTemplateMap()
@@ -219,9 +219,9 @@ Are you sure you want to continue?"""
     QDialog.accept(self)
 
 
-if not hasattr(changemodel, "misoOveriddenMethods"):
+if not hasattr(changemodel, "addonOveriddenMethods"):
     print("ADDED THROUGH JP")
-    changemodel.misoOveriddenMethods = True
-    changemodel.accept = misoAccept
-    changemodel.modelChanged = misoModelChanged
-    changemodel.rebuildTemplateMap = misoRebuildTemplateMap
+    changemodel.addonOveriddenMethods = True
+    changemodel.accept = addonAccent
+    changemodel.modelChanged = addonModelChanged
+    changemodel.rebuildTemplateMap = addonRebuildTemplateMap

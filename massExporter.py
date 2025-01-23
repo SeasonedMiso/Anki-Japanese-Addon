@@ -112,7 +112,7 @@ class MassExporter:
           return text
 
     def massRemoveHTML(self, field,  notes, generateWidget):
-        if not miAsk('Are you sure you want to mass remove HTML from the "'+ field +'" field? This will not remove images, or "<br>" defined line breaks, but will remove pitch shapes from the previous beta version of the Miso Japanese Addon.'):
+        if not miAsk('Are you sure you want to mass remove HTML from the "'+ field +'" field? This will not remove images, or "<br>" defined line breaks, but will remove pitch shapes from the previous beta version of the Japanese Addon.'):
             return
         self.mw.checkpoint('Mass HTML Removal')    
         generateWidget.close() 

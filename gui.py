@@ -72,7 +72,7 @@ class JSGui(QScrollArea):
         self.buttonStatus = 0
         self.selectedRow = False
         self.initializing = False
-        self.addMisoNoteTypeOnApply = False
+        self.addJapaneseNoteTypeOnApply = False
         self.sortedProfiles = False
         self.sortedNoteTypes = False
         self.importW = False
@@ -81,7 +81,7 @@ class JSGui(QScrollArea):
 
     def setInitialValues(self):
         self.setWindowIcon(QIcon(join(addon_path, 'icons', 'miso.png')))
-        self.setWindowTitle("Miso Japanese Settings (Ver. " + verNumber + ")")
+        self.setWindowTitle("Japanese Settings (Ver. " + verNumber + ")")
         self.cont.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         self.cont.setFixedSize(1167, 725)
         self.setWidget(self.cont)
@@ -90,7 +90,7 @@ class JSGui(QScrollArea):
         self.initActiveFieldsCB()
         self.setToolTips()
         self.loadCurrentAFs()
-        self.loadCSSJSAddMiso()
+        self.loadCSSJSAddJP()
         self.handleAutoCSSJS()
         self.loadProfileCB()
         self.loadProfilesList()
@@ -170,7 +170,7 @@ class JSGui(QScrollArea):
             self.arMenu.hide()
         if self.importW:
             self.importW.hide()
-        self.mw.MisoJSSettings = None
+        self.mw.JPJSSettings = None
         event.accept() 
 
     def hideEvent(self, event):
@@ -246,15 +246,15 @@ class JSGui(QScrollArea):
             self.reboot()
 
 
-    def loadCSSJSAddMiso(self):
+    def loadCSSJSAddJP(self):
         if self.config['AutoCssJsGeneration'].lower() == 'on':
             self.ui.autoCSSJS.setChecked(True)
-        if self.config['AddMisoJapaneseTemplate'].lower() == 'on':
-            self.ui.addMisoNoteType.setChecked(True)
+        if self.config['AddJapaneseTemplate'].lower() == 'on':
+            self.ui.addJapaneseNoteType.setChecked(True)
 
     def initHandlers(self):
         self.ui.autoCSSJS.toggled.connect(self.handleAutoCSSJS)
-        self.ui.addMisoNoteType.toggled.connect(self.handleAddMiso)
+        self.ui.addJapaneseNoteType.toggled.connect(self.handleAddJP)
         self.ui.activeProfileCB.currentIndexChanged.connect(self.profileChange )
         self.ui.activeNoteTypeCB.currentIndexChanged.connect(self.noteTypeChange)
         self.ui.activeCardTypeCB.currentIndexChanged.connect(self.selectionChange)
@@ -289,12 +289,6 @@ class JSGui(QScrollArea):
         self.ui.runRulesButton.clicked.connect(self.applyAllRules)
         self.ui.searchRulesLE.returnPressed.connect(self.initRuleSearch)
         self.ui.searchRulesButton.clicked.connect(self.initRuleSearch)
-
-        # self.ui.misoInfoSite.clicked.connect(lambda: openLink('https://miso.io'))
-        # self.ui.misoPatreonIcon.clicked.connect(lambda: openLink('https://www.patreon.com/Miso'))
-        # self.ui.misoInfoYT.clicked.connect(lambda: openLink('https://www.youtube.com/channel/UCQFe3x4WAgm7joN5daMm5Ew'))
-        # self.ui.misoInfoTW.clicked.connect(lambda: openLink('https://twitter.com/Miso_Yoga'))
-        # self.ui.gitHubIcon.clicked.connect(lambda: openLink('https://github.com/miso-official/Miso-Japanese-Addon'))
 
     def initRuleSearch(self):
         text = self.ui.searchRulesLE.text()
@@ -435,11 +429,11 @@ class JSGui(QScrollArea):
     def disableSep(self, sep):
         sep.setEnabled(False)    
 
-    def handleAddMiso(self):
-        if self.ui.addMisoNoteType.isChecked():
-            if not self.checkMisoNoteExistence():
-                self.addMisoNoteTypeOnApply = True
-                self.resetMisoActiveFields()
+    def handleAddJP(self):
+        if self.ui.addJapaneseNoteType.isChecked():
+            if not self.checkJPNoteExistence():
+                self.addJapaneseNoteTypeOnApply = True
+                self.resetAddonActiveFields()
 
     def loadLookAhead(self):
         self.ui.lookAhead.setValue(self.config['LookAhead'])
@@ -503,28 +497,28 @@ class JSGui(QScrollArea):
         if options[2].lower() == 'on' :
             accents.setChecked(True)
 
-    def resetMisoActiveFields(self):
-        self.removeMisoFields()
-        self.addMisoFields()
+    def resetAddonActiveFields(self):
+        self.removeAddonFields()
+        self.addAddonFields()
         
-    def checkMisoNoteExistence(self):
+    def checkJPNoteExistence(self):
         models = self.mw.col.models.all()
         for model in models:
-            if model['name'] == 'Miso Japanese':
+            if model['name'] == 'Japanese':
                 return True
         return False
 
-    def removeMisoFields(self):
+    def removeAddonFields(self):
         afList = self.ui.listWidget
         for i in reversed(range(afList.rowCount())):
-            if afList.item(i, 1).text() == 'Miso Japanese':
+            if afList.item(i, 1).text() == 'Japanese':
                 self.ui.listWidget.removeRow(i)
 
 
-    def addMisoFields(self):
-        self.addToList('All', 'Miso Japanese', 'Sentence', 'Expression', 'Front', 'Colored Hover')
-        self.addToList('All', 'Miso Japanese', 'Sentence', 'Expression', 'Back', 'Colored Kanji Reading')
-        self.addToList('All', 'Miso Japanese', 'Sentence', 'Meaning', 'Back', 'Colored Hover')
+    def addAddonFields(self):
+        self.addToList('All', 'Japanese', 'Sentence', 'Expression', 'Front', 'Colored Hover')
+        self.addToList('All', 'Japanese', 'Sentence', 'Expression', 'Back', 'Colored Kanji Reading')
+        self.addToList('All', 'Japanese', 'Sentence', 'Meaning', 'Back', 'Colored Hover')
 
     def handleAutoCSSJS(self):
         if self.ui.autoCSSJS.isChecked():
@@ -535,7 +529,7 @@ class JSGui(QScrollArea):
             self.ui.activeSideCB.setEnabled(True)
             self.ui.activeDisplayTypeCB.setEnabled(True)
             self.ui.activeActionButton.setEnabled(True)
-            self.ui.addMisoNoteType.setEnabled(True)
+            self.ui.addJapaneseNoteType.setEnabled(True)
             self.ui.listWidget.setEnabled(True)
 
         else:
@@ -546,7 +540,7 @@ class JSGui(QScrollArea):
             self.ui.activeSideCB.setEnabled(False)
             self.ui.activeDisplayTypeCB.setEnabled(False)
             self.ui.activeActionButton.setEnabled(False)
-            self.ui.addMisoNoteType.setEnabled(False)
+            self.ui.addJapaneseNoteType.setEnabled(False)
             self.ui.listWidget.setEnabled(False)
 
     def selectionChange(self):
@@ -587,29 +581,29 @@ class JSGui(QScrollArea):
                     prof = 'All'
                 self.addToList(prof, afl[2], afl[3], afl[4], afl[5][0].upper() + afl[5][1:].lower() , self.displayTranslation[dt])
 
-    def saveCSSJSAddMiso(self):
-        miso = 'off'
+    def saveCSSJSAddPicth(self):
+        addon = 'off'
         css = 'off'
         if self.ui.autoCSSJS.isChecked():
             css = 'on'
-        if self.ui.addMisoNoteType.isChecked():
-            miso = 'on'
-        return css, miso;   
+        if self.ui.addJapaneseNoteType.isChecked():
+            addon = 'on'
+        return css, addon;
 
     def saveConfiguration(self):
         sc, wc = self.saveSentenceWordConfig()
         ffs, la = self.saveNumberConfigOptions()
         ac, gc = self.saveAudioGraphsConfig()
         colors = self.saveHANOK()
-        addmiso, bo, autocss, ds, goh, gohb, kc, poc = self.saveBinaryOptions()
+        addAddon, bo, autocss, ds, goh, gohb, kc, poc = self.saveBinaryOptions()
         newConf = {"ActiveFields" : self.saveActiveFields(), "Individual:Kana;DictForm;Pitch;Audio;Graphs" : wc, "Group:Kana;DictForm;Pitch;Audio;Graphs": sc,
          "FuriganaFontSize" : ffs, "LookAhead" : la, "Profiles" : self.saveProfilesConfig(),
-         "AudioFields" : ac, "PitchGraphFields" :  gc, "ColorsHANOK" : colors, "AddMisoJapaneseTemplate": addmiso, "BufferedOutput" :  bo,
+         "AudioFields" : ac, "PitchGraphFields" :  gc, "ColorsHANOK" : colors, "AddJapaneseTemplate": addAddon, "BufferedOutput" :  bo,
          "AutoCssJsGeneration" : autocss, "DisplayShapes" : ds, "GraphOnHover" : goh, "GraphOnHoverBack" : gohb, "KatakanaConversion" : kc, "PlayAudioOnClick" : poc,
          "HistoricalConversion" : self.saveHistoricalConversion()
 
          }
-        if self.addMisoNoteTypeOnApply:
+        if self.addJapaneseNoteTypeOnApply:
             self.modeler.addModels()
         self.mw.addonManager.writeConfig(__name__, newConf)
         removeLegacy = self.ui.removeLegacy.isChecked()
@@ -629,7 +623,7 @@ class JSGui(QScrollArea):
             return 'off'
 
     def saveBinaryOptions(self):
-        addmiso = 'off'
+        addAddon = 'off'
         bo = 'off'
         autocss = 'off'
         ds = 'off'
@@ -637,8 +631,8 @@ class JSGui(QScrollArea):
         gohb = 'off'
         kc = 'off'
         poc = 'off'
-        if self.ui.addMisoNoteType.isChecked():
-            addmiso = 'on'
+        if self.ui.addJapaneseNoteType.isChecked():
+            addAddon = 'on'
         if self.ui.bufferedOutput.isChecked():
             bo = 'on'
         if self.ui.autoCSSJS.isChecked():
@@ -653,7 +647,7 @@ class JSGui(QScrollArea):
             kc = 'on'
         if self.ui.audioOnClick.isChecked():
             poc = 'on'
-        return addmiso, bo, autocss, ds, goh, gohb, kc, poc;
+        return addAddon, bo, autocss, ds, goh, gohb, kc, poc;
 
     def saveHANOK(self):
         return [self.ui.heibanColor.text(), self.ui.atamadakaColor.text(), self.ui.nakadakaColor.text(), self.ui.odakaColor.text(), self.ui.kifukuColor.text()]
@@ -934,7 +928,7 @@ class JSGui(QScrollArea):
         self.ui.activeSideCB.setToolTip(self.sideTT)
         self.ui.activeDisplayTypeCB.setToolTip(self.displayTypeTT)
         self.ui.autoCSSJS.setToolTip('If checked, the addon will manage the CSS and JS of all note and card types designated in the active fields list below.\nIf this is disabled the user is responsible for ensuring that their CSS and JS functions as they wish.')
-        self.ui.addMisoNoteType.setToolTip('If checked, the addon will attempt to add the Miso Japanese Note Type if it does not already exist.\nIt will also regenerate the active fields for the Miso Japanese Note Type.')
+        self.ui.addJapaneseNoteType.setToolTip('If checked, the addon will attempt to add the Japanese Note Type if it does not already exist.\nIt will also regenerate the active fields for the Japanese Note Type.')
         self.ui.profilesCB.setToolTip('These are the profiles that the add-on will be active on.\nWhen set to "All", the add-on will be active on all profiles.')
         self.ui.sentenceKana.setToolTip('When checked, the addon will generate the kana reading of all\nrecognized words within the target field.')
         self.ui.sentenceDictForm.setToolTip('When checked, the addon will generate the dictionary form of all\nrecognized verbs and adjectives within the target field.')

@@ -12,4 +12,4 @@
 # The final release will also be organized into individual .py files by functionality.
 # Lucas - Miso Founder
 
-from . import main, misoMessage, modelChanger
+from . import main, modelChanger
