@@ -44,7 +44,7 @@ class MILanguageModels():
 
 @font-face {
 font-family: yuumichou;
-src: url(_yumin.ttf);
+ankiJPPitch: url(_yumin.ttf);
 }
 
 .card,

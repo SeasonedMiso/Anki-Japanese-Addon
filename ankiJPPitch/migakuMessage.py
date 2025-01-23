@@ -44,11 +44,11 @@ def getLatestVideos(config):
             count+=1
             if (count == 1):
                 videoEmbeds.append("<h2>Check Out Our Latest Release:</h2>")
-                videoEmbeds.append('<div class="iframe-wrapper"><div class="clickable-video-link" data-vid="'+ vid + '"></div><iframe width="640" height="360" src="https://www.youtube.com/embed/'+ vid + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
+                videoEmbeds.append('<div class="iframe-wrapper"><div class="clickable-video-link" data-vid="'+ vid + '"></div><iframe width="640" height="360" ankiJPPitch="https://www.youtube.com/embed/'+ vid + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
             else:
                 if (count == 2):
                     videoEmbeds.append("<h2>Previous Videos:</h2>")
-                videoEmbeds.append('<div class="iframe-wrapper" style="display:inline-block"><div class="clickable-video-link" data-vid="'+ vid + '"></div><iframe width="320" height="180" src="https://www.youtube.com/embed/'+ vid + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
+                videoEmbeds.append('<div class="iframe-wrapper" style="display:inline-block"><div class="clickable-video-link" data-vid="'+ vid + '"></div><iframe width="320" height="180" ankiJPPitch="https://www.youtube.com/embed/'+ vid + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>')
         return "".join(videoEmbeds), videoIds[0]
     except:
         return False, False
@@ -58,10 +58,10 @@ def getLatestVideos(config):
 
 
 def miMessage(text, parent=False):
-    title = "Miso"
+    title = "Migaku"
     if parent is False:
         parent = aqt.mw.app.activeWindow() or aqt.mw
-    icon = QIcon(join(addon_path, 'icons', 'miso.png'))
+    icon = QIcon(join(addon_path, 'icons', 'migaku.png'))
     mb = QMessageBox(parent)
     mb.setWindowIcon(icon)
     mb.setWindowTitle(title)
@@ -76,10 +76,10 @@ def miMessage(text, parent=False):
     mb.layout().addWidget(wide, 0, 2)
     mb.layout().setColumnStretch(0, 3)
     mb.layout().addWidget(cb, 1, 1)
-    b = mb.addButton(QMessageBox.StandardButton.Ok)
+    b = mb.addButton(QMessageBox.Ok)
     b.setFixedSize(100, 30)
     b.setDefault(True)
-    mb.exec()
+    mb.exec_()
     wv.deleteLater()
     if cb.isChecked():
         return True
@@ -87,7 +87,7 @@ def miMessage(text, parent=False):
         return False
 
 
-misoMessage = '''
+migakuMessage = '''
 <style>
     body{
     margin:0px;
@@ -135,11 +135,11 @@ misoMessage = '''
     }
 </style>
 <body>
-<h3><b>Thanks so much for using the Miso Add-on series!</b></h3>
+<h3><b>Thanks so much for using the Migaku Add-on series!</b></h3>
 <div class="center-div">
-    If you would like to ensure you don't miss any Miso updates, or new releases.<br>
-    Please consider visiting our <a href="https://miso.io">website</a>, and following us on <a href="https://www.youtube.com/channel/UCQFe3x4WAgm7joN5daMm5Ew">YouTube</a> and <a href="https://twitter.com/Miso_Yoga">Twitter</a>!
-    <br>Also, please consider supporting Miso on <a href="https://www.patreon.com/Miso">Patreon</a> if you have found value in our work!
+    If you would like to ensure you don't miss any Migaku updates, or new releases.<br>
+    Please consider visiting our <a href="https://migaku.io">website</a>, and following us on <a href="https://www.youtube.com/channel/UCQFe3x4WAgm7joN5daMm5Ew">YouTube</a> and <a href="https://twitter.com/Migaku_Yoga">Twitter</a>!
+    <br>Also, please consider supporting Migaku on <a href="https://www.patreon.com/Migaku">Patreon</a> if you have found value in our work!
 </div>
 <div>
 %s
@@ -161,28 +161,28 @@ misoMessage = '''
 def disableMessage(config):
     config["displayAgain"] = False
     saveConfiguration(config)
-    mw.MisoShouldNotShowMessage = True
+    mw.MigakuShouldNotShowMessage = True
 
 def displayMessageMaybeDisableMessage(content, config):
-    if miMessage(misoMessage%content):
+    if miMessage(migakuMessage%content):
         disableMessage(config)
      
-def attemptShowMisoBrandUpdateMessage():
+def attemptShowMigakuBrandUpdateMessage():
     config = getConfig()
     shouldShow = config["displayAgain"]
-    if shouldShow and not hasattr(mw, "MisoShouldNotShowMessage"):
+    if shouldShow and not hasattr(mw, "MigakuShouldNotShowMessage"):
         videoIds,videoId = getLatestVideos(config)
         if videoIds:
             displayMessageMaybeDisableMessage(videoIds, config)
         else:
             displayMessageMaybeDisableMessage("", config)
-    elif shouldShow and hasattr(mw, "MisoShouldNotShowMessage"):
+    elif shouldShow and hasattr(mw, "MigakuShouldNotShowMessage"):
         disableMessage(config)
     else:
-        mw.MisoShouldNotShowMessage = True
+        mw.MigakuShouldNotShowMessage = True
 
 
-addHook("profileLoaded", attemptShowMisoBrandUpdateMessage)
+addHook("profileLoaded", attemptShowMigakuBrandUpdateMessage)
 
 
 
